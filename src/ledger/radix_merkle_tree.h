@@ -2,11 +2,13 @@
 #define _BUBI_RADIX_MERKLE_TREE_H_
 
 #include <memory>
+#include <stack>
 
 #include "radix_merkle_tree_node.h"
-#include "radix_merkle_tree_node.h"
+#include "radix_merkle_tree_leaf.h"
 
 #include "utils.h"
+#include "database.h"
 
 namespace Bubi{
 
@@ -24,18 +26,18 @@ class RadixMerkleTree{
 public:
 	typedef std::shared_ptr <RadixMerkleTree>	pointer;
 	typedef std::shared_ptr <RadixMerkleTree>& 	ref;
-	typedef std::stack <std::pair<RadixMerkleTreeLeaf::pointer, int> > RadixMerkleTreeLeafStack;
+	typedef std::stack <std::pair<RadixMerkleTreeNode::pointer, int> > RadixMerkleTreeLeafStack;
 
-	bool 							add_item (const RadixMerkleTreeLeaf& item, bool is_transaction);
-	bool 							add_given_item (const RadixMerkleTreeLeaf& item, bool is_transaction);
+	bool 							add_item (RadixMerkleTreeLeaf::pointer item, bool is_transaction);
+	bool 							add_given_item (RadixMerkleTreeLeaf::pointer item, bool is_transaction);
 	RadixMerkleTreeLeafStack 		get_stack (uint256& hash);
 	int 							select_branch (uint256 &hash, int tree_depth);
 	RadixMerkleTreeNode::pointer 	fetch_node_from_db (uint256& hash);
 	RadixMerkleTreeNode::pointer	descend (RadixMerkleTreeNode::ref parent, int branch);
 	void 							dirty_up (RadixMerkleTreeLeafStack& stack, uint256& index, RadixMerkleTreeNode::ref child);
-	bool 							has_item (uint256 const& hash);
-	RadixMerkleTreeNode* 			walk_to_leaf (uint256 const& hash);
-	RadixMerkleTreeLeaf::pointer 	peek_item (uint256 const& hash);
+	bool 							has_item (uint256& hash);
+	RadixMerkleTreeNode* 			walk_to_leaf (uint256& hash);
+	RadixMerkleTreeLeaf::pointer 	peek_item (uint256& hash);
 	
 	bool 							update_given_item (RadixMerkleTreeLeaf::ref item, bool is_transaction);
 	

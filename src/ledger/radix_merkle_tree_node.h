@@ -2,14 +2,17 @@
 #define _BUBI_RADIX_MERKLE_TREE_NODE_H_
 
 #include <memory>
+#include <mutex>
 
 #include "radix_merkle_tree_leaf.h"
+#include "utils.h"
 
 namespace Bubi{
 
 class RadixMerkleTreeNode{
 public:
 	typedef std::shared_ptr<RadixMerkleTreeNode>	pointer;
+	typedef pointer&								ref;
 	
 	enum TreeNodeType{
 		TREE_NODE_TYPE_ERROR = 0,
@@ -18,6 +21,12 @@ public:
 		TREE_NODE_TYPE_ACCOUNT_LEAF = 3
 	};
 	
+	RadixMerkleTreeNode (RadixMerkleTreeLeaf::pointer item,TreeNodeType node_type)
+	:item_(item), type_(node_type){
+		hash_ = item_->get_index ();
+	}
+	RadixMerkleTreeNode (){}
+
 	bool 							is_empty_branch (int branch);
 	RadixMerkleTreeNode::pointer 	get_child (int branch);
 	uint256& 						get_child_hash(int branch);
@@ -27,6 +36,8 @@ public:
 	RadixMerkleTreeLeaf::ref 		peek_leaf();
 	void 							make_inner();
 	bool 							set_item (RadixMerkleTreeLeaf::ref item, TreeNodeType node_type);
+	bool							is_inner ();
+	uint256&						get_hash ();
 	
 private:
 	uint256							hash_;

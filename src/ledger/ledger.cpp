@@ -1,11 +1,13 @@
 #include "ledger.h"
 
+
 namespace Bubi{
 
 bool 
 Ledger::add_account_tree_entry (uint256 &tag, Serializer &s){
-	RadixMerkleTreeLeaf item (tag, s);
-	account_tree_->add_item (item, false);
+	RadixMerkleTreeLeaf::pointer item = std::make_shared <RadixMerkleTreeLeaf> (tag, s);
+//	RadixMerkleTreeLeaf item (tag, s);
+	return account_tree_->add_item (item, false);
 }
 
 bool 

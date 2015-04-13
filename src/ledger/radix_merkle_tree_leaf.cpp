@@ -1,5 +1,7 @@
 #include "radix_merkle_tree_leaf.h"
 
+#include <vector>
+
 namespace Bubi{
 
 RadixMerkleTreeLeaf::RadixMerkleTreeLeaf(
@@ -10,7 +12,7 @@ RadixMerkleTreeLeaf::RadixMerkleTreeLeaf(
 {
 }
 
-vector <unsigned char> &
+std::vector <unsigned char> &
 RadixMerkleTreeLeaf::peek_data (){
 	return data_.peek_data();
 }

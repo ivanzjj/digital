@@ -1,8 +1,21 @@
 #include "radix_merkle_tree_node.h"
 
+#include <assert.h>
+#include <vector>
+
 namespace Bubi{
 
 std::mutex RadixMerkleTreeNode::child_lock_;
+
+uint256&
+RadixMerkleTreeNode::get_hash (){
+	return hash_;
+}
+
+bool
+RadixMerkleTreeNode::is_inner (){
+	return (type_ == TREE_NODE_TYPE_INNER_NODE);
+}
 
 bool
 RadixMerkleTreeNode::is_empty_branch (int branch){
@@ -12,7 +25,7 @@ RadixMerkleTreeNode::is_empty_branch (int branch){
 RadixMerkleTreeNode::pointer
 RadixMerkleTreeNode::get_child (int branch){
 	assert (branch >= 0 && branch < 16);
-	assert (is_inner_node());
+	assert (is_inner());
 	
 	std::unique_lock <std::mutex> lock (child_lock_);
 	return children_[branch];
@@ -27,7 +40,7 @@ RadixMerkleTreeNode::get_child_hash (int branch){
 void
 RadixMerkleTreeNode::canonicalize (int branch, RadixMerkleTreeNode::ref node){
 	assert (branch >= 0 && branch < 16);
-	assert (is_inner_node ());
+	assert (is_inner ());
 	assert (node);
 	
 	std::unique_lock <std::mutex> lock (child_lock_);
@@ -54,12 +67,12 @@ RadixMerkleTreeNode::update_hash (){
 		nh = s.get_sha512_half ();
 	}
 	else if (type_ == TREE_NODE_TYPE_TRANSACTION_LEAF){
-		vector <unsigned char>& data = item_->peek_data();
+		std::vector <unsigned char>& data = item_->peek_data();
 		nh = Serializer::get_prefix_hash (&(data.front()), data.size());
 	}
-	else if (type == TREE_NODE_TYPE_ACCOUNT_LEAF){
+	else if (type_ == TREE_NODE_TYPE_ACCOUNT_LEAF){
 		Serializer s;
-		vector <unsigned char>& data = item_->peek_data ();
+		std::vector <unsigned char>& data = item_->peek_data ();
 		s.add_raw (&(data.front()), data.size());
 		s.add256 (item_->get_index ());
 		nh = s.get_sha512_half();
@@ -94,8 +107,9 @@ RadixMerkleTreeNode::make_inner (){
 bool 
 RadixMerkleTreeNode::set_item (RadixMerkleTreeLeaf::ref item, TreeNodeType node_type){
 	std::unique_lock <std::mutex> lock (child_lock_);
-	type_ = type;
+	type_ = node_type;
 	item_ = item;
 	return update_hash ();
 }
 
+}

@@ -1,5 +1,8 @@
 #include "radix_merkle_tree.h"
 
+#include <assert.h>
+#include "utils.h"
+
 namespace Bubi{
 
 RadixMerkleTreeNode::pointer
@@ -21,7 +24,7 @@ RadixMerkleTree::descend (RadixMerkleTreeNode::ref parent, int branch){
 	return node;
 }
 
-RadixMerkleTreeLeafStack
+RadixMerkleTree::RadixMerkleTreeLeafStack
 RadixMerkleTree::get_stack (uint256 & hash){
 	RadixMerkleTreeLeafStack stack;
 	RadixMerkleTreeNode::pointer node = root_;
@@ -39,7 +42,7 @@ RadixMerkleTree::get_stack (uint256 & hash){
 		tree_depth++;
 	}
 	// leaf node
-	stack.push_back ( MP(node, tree_depth) );
+	stack.push ( MP(node, tree_depth) );
 	return stack;
 }
 
@@ -55,13 +58,13 @@ RadixMerkleTree::select_branch (uint256 &hash, int tree_depth){
 }
 
 bool 
-RadixMerkleTree::add_given_item (RadixMerkleTreeLeaf::ref item, bool is_transaction){
+RadixMerkleTree::add_given_item (RadixMerkleTreeLeaf::pointer item, bool is_transaction){
 	uint256 index = item->get_index ();
 	RadixMerkleTreeLeafStack stack = get_stack (index);
 	RadixMerkleTreeNode::pointer node;
 	int tree_depth;
 	
-	RadixMerkleTreeNode::TreeNodeType node_type = is_transaction ? TREE_NODE_TYPE_TRANSACTION_LEAF : TREE_NODE_TYPE_ACCOUNT_LEAF;
+	RadixMerkleTreeNode::TreeNodeType node_type = is_transaction ? RadixMerkleTreeNode::TREE_NODE_TYPE_TRANSACTION_LEAF : RadixMerkleTreeNode::TREE_NODE_TYPE_ACCOUNT_LEAF;
 	// make sure stack is not empty
 	assert (!stack.empty());
 	node = stack.top().first;
@@ -73,7 +76,7 @@ RadixMerkleTree::add_given_item (RadixMerkleTreeLeaf::ref item, bool is_transact
 		int branch = select_branch (index, tree_depth);
 		assert (node->is_empty_branch (branch));
 		RadixMerkleTreeNode::pointer new_node = 
-			std::make_shared <RadixMerkleTreeNode> (item, type);
+			std::make_shared <RadixMerkleTreeNode> (item, node_type);
 		if (!node->set_child (new_node, new_node->get_hash(), branch)){
 			assert (false);
 		}
@@ -81,8 +84,8 @@ RadixMerkleTree::add_given_item (RadixMerkleTreeLeaf::ref item, bool is_transact
 	else {
 		// leaf node 
 		RadixMerkleTreeLeaf::pointer other_item = node->peek_leaf ();
-		assert (other_item && (index != other_item->get_index());
-		int other_index = other_item->get_index ();
+		assert (other_item && (index != other_item->get_index()));
+		uint256 other_index = other_item->get_index ();
 		
 		node->make_inner ();
 		int b1, b2;
@@ -90,7 +93,7 @@ RadixMerkleTree::add_given_item (RadixMerkleTreeLeaf::ref item, bool is_transact
 		while ((b1 = select_branch (index, tree_depth)) == 
 			   (b2 = select_branch (other_index, tree_depth)) ){
 			
-			stack.push_back (MP (node,tree_depth));
+			stack.push (MP (node,tree_depth));
 			tree_depth++;
 			node = std::make_shared <RadixMerkleTreeNode> ();
 			node->make_inner ();
@@ -98,13 +101,13 @@ RadixMerkleTree::add_given_item (RadixMerkleTreeLeaf::ref item, bool is_transact
 		assert (node->is_inner());
 		
 		RadixMerkleTreeNode::pointer new_node = 
-			std::make_shared <RadixMerkleTreeNode> (item, type);
-		if (!node->set_child (new_node, new_node->get_hash (), b1){
+			std::make_shared <RadixMerkleTreeNode> (item, node_type);
+		if (!node->set_child (new_node, new_node->get_hash (), b1)){
 			assert (false);
 		}
 		
-		new_node = std::make_shared <RadixMerkleTreeNode> (other_item, type);
-		if (!node->set_child (new_node, new_node->get_hash (), b2){
+		new_node = std::make_shared <RadixMerkleTreeNode> (other_item, node_type);
+		if (!node->set_child (new_node, new_node->get_hash (), b2)){
 			assert (false);
 		}
 	}
@@ -117,12 +120,12 @@ RadixMerkleTree::dirty_up (RadixMerkleTreeLeafStack& stack, uint256& index, Radi
 	
 	while (!stack.empty()){
 		RadixMerkleTreeNode::pointer node = stack.top().first;
-		int tree_depth = stack.top().second();
+		int tree_depth = stack.top().second;
 		stack.pop();
 		assert (node->is_inner());
 		
 		int branch = select_branch (index, tree_depth);
-		if (!node->set_child (child, child->get_hash, branch){
+		if (!node->set_child (child, child->get_hash(), branch)){
 			assert (false);
 		}
 		child = std::move (node);
@@ -130,19 +133,21 @@ RadixMerkleTree::dirty_up (RadixMerkleTreeLeafStack& stack, uint256& index, Radi
 }
 
 bool 
-RadixMerkleTree::add_item (const RadixMerkleTreeLeaf& item, bool is_transaction){
-	return add_given_item (std::make_shared <RadixMerkleTreeLeaf> (item), is_transaction);
+RadixMerkleTree::add_item (const RadixMerkleTreeLeaf::pointer item, bool is_transaction){
+	return add_given_item (item, is_transaction);
 }
 
 bool
-RadixMerkleTree::has_item (uint256 const& hash){
+RadixMerkleTree::has_item (uint256& hash){
 	RadixMerkleTreeNode *leaf = walk_to_leaf (hash);
 	return (leaf != NULL);
 }
 
 RadixMerkleTreeNode*
-RadixMerkleTree::walk_to_leaf (uint256 const& hash){
-	RadixMerkleTreeNode *now = root_.get ();
+RadixMerkleTree::walk_to_leaf (uint256& hash){
+//	RadixMerkleTreeNode *now = root_.get ();
+	RadixMerkleTreeNode::pointer now = root_;
+
 	int depth = 0, branch;
 	
 	while (now->is_inner()){
@@ -153,14 +158,14 @@ RadixMerkleTree::walk_to_leaf (uint256 const& hash){
 		now = descend (now, branch);
 		depth++;
 	}
-	return (now->get_index() == hash ? now : NULL):
+	return (now->peek_leaf()->get_index() == hash ? now.get () : NULL);
 }
 
 // this smart pointer is the same to NULL in pointer
 static const RadixMerkleTreeLeaf::pointer no_item;
 
 RadixMerkleTreeLeaf::pointer
-RadixMerkleTree::peek_item (uint256 const& hash){
+RadixMerkleTree::peek_item (uint256& hash){
 	RadixMerkleTreeNode* leaf = walk_to_leaf (hash);
 	if (leaf == NULL)	
 		return no_item;
@@ -171,7 +176,7 @@ bool
 RadixMerkleTree::update_given_item (RadixMerkleTreeLeaf::ref item, bool is_transaction){
 	uint256 index = item->get_index ();
 	RadixMerkleTreeLeafStack stack = get_stack (index);
-	RadixMerkleTreeNode::TreeNodeType node_type = is_transaction ? TREE_NODE_TYPE_TRANSACTION_LEAF : TREE_NODE_TYPE_ACCOUNT_LEAF;
+	RadixMerkleTreeNode::TreeNodeType node_type = is_transaction ? RadixMerkleTreeNode::TREE_NODE_TYPE_TRANSACTION_LEAF : RadixMerkleTreeNode::TREE_NODE_TYPE_ACCOUNT_LEAF;
 	
 	if (stack.empty()){
 		assert (false);
@@ -180,7 +185,7 @@ RadixMerkleTree::update_given_item (RadixMerkleTreeLeaf::ref item, bool is_trans
 	int tree_depth = stack.top().second;
 	stack.pop ();
 	
-	assert (!node->is_inner() && node->get_index == index);
+	assert (!node->is_inner() && node->peek_leaf()->get_index() == index);
 	
 	if (!node->set_item (item, node_type)){
 		BUBI_LOG ("leaf has no change");

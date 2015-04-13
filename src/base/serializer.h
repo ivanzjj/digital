@@ -1,7 +1,11 @@
 #ifndef _BUBI_SERIALIZER_H_
-#def 	_BUBI_SERIALIZER_H_
+#define 	_BUBI_SERIALIZER_H_
 
 #include <vector>
+#include <memory>
+#include "utils.h"
+
+namespace Bubi{
 
 class Serializer{
 public:
@@ -17,5 +21,7 @@ public:
 private:
 	std::vector <unsigned char> data_;
 };
+
+}
 
 #endif

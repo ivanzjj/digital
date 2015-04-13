@@ -4,6 +4,11 @@
 #include <memory>
 
 #include "radix_merkle_tree.h"
+#include "radix_merkle_tree_leaf.h"
+#include "serializer.h"
+#include "utils.h"
+
+#include <stdint.h>
 
 namespace Bubi{
 
