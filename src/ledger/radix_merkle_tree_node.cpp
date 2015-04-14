@@ -7,6 +7,14 @@ namespace Bubi{
 
 std::mutex RadixMerkleTreeNode::child_lock_;
 
+RadixMerkleTreeNode::RadixMerkleTreeNode (){
+	branch_mask_ = 0;
+	type_ = TREE_NODE_TYPE_INNER_NODE; 
+}
+RadixMerkleTreeNode::~RadixMerkleTreeNode (){
+
+}
+
 uint256&
 RadixMerkleTreeNode::get_hash (){
 	return hash_;
@@ -52,6 +60,7 @@ RadixMerkleTreeNode::set_child (RadixMerkleTreeNode::ref new_node, uint256 &hash
 	std::unique_lock <std::mutex> lock (child_lock_);
 	children_hash_ [branch] = hash;
 	children_ [branch] = new_node;
+	branch_mask_ |= (1 << branch);
 	return update_hash ();
 }
 
@@ -97,6 +106,7 @@ void
 RadixMerkleTreeNode::make_inner (){
 	item_.reset ();
 	branch_mask_ = 0;
+	type_ = TREE_NODE_TYPE_INNER_NODE; 
 	hash_.zero ();
 	for (int i=0; i<16; ++i){
 		children_hash_[i].zero ();

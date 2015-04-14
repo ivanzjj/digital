@@ -20,8 +20,11 @@ public:
 	bool add_account_tree_entry (uint256&, Serializer&);
 	bool has_account (uint256& hash);
 	bool update_account_tree_entry (RadixMerkleTreeLeaf::ref item);
-	
-	
+	RadixMerkleTree::ref get_transaction_tree ();
+	RadixMerkleTree::ref get_account_tree ();
+
+	Ledger ();
+	~Ledger ();
 	
 private:
 	uint256			hash_;

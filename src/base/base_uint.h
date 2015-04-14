@@ -1,6 +1,9 @@
 #ifndef _BUBI_BASE_UINT_H_
 #define _BUBI_BASE_UINT_H_
 
+#include <string>
+#include <iostream>
+
 namespace Bubi{
 
 template <std::size_t bits>
@@ -11,28 +14,37 @@ class base_uint {
 
 public:
 	pointer begin (){
-		return reinterpret_cast <unsigned char *>(data);
+		return data;
 	}
+
 	pointer end (){
-		pointer p_begin = reinterpret_cast <unsigned char *>(data);
-		return p_begin + WIDTH * 4;
+		return data + WIDTH;
 	}
-	base_uint (){
-		bytes = bits >> 3;
-	}
+
 	int get_bytes (){
-		return bytes;
+		return WIDTH;
 	}
+
 	void zero (){
-		for (int i = 0; i < bytes; i++){
-			*(begin() + i) = 0;
+		for (int i = 0; i < WIDTH; i++){
+			data[i] = 0;
 		}		
+	}
+	void init (unsigned char *ch){
+		for (int i = 0; i < WIDTH; i++){
+			data[i] = ch[i];
+		}
+	}
+	void to_string (){
+		for (int i = 0; i < WIDTH; i++){
+			printf ("%02x ", data[i]);
+		}
+		printf ("\n");
 	}
 
 private:
-	enum {WIDTH = bits / 32};
-	unsigned int data[WIDTH];
-	int bytes;
+	enum {WIDTH = bits / 8};
+	unsigned char data[WIDTH];
 };
 
 template <std::size_t Bits>

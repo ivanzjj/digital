@@ -34,6 +34,7 @@ AC_CONFIG_FILES([Makefile
 		src/database/Makefile
 		src/ledger/Makefile
 		src/base/Makefile
+		Test/Makefile
 		])
 
 AC_OUTPUT

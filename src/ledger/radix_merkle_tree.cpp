@@ -5,6 +5,16 @@
 
 namespace Bubi{
 
+RadixMerkleTree::RadixMerkleTree (){
+	root_ = std::make_shared <RadixMerkleTreeNode> ();
+	state_ = STATE_VALID;
+	type_ = TYPE_ACCOUNT_TREE;
+}
+
+RadixMerkleTree::~RadixMerkleTree (){
+	
+}
+
 RadixMerkleTreeNode::pointer
 RadixMerkleTree::fetch_node_from_db (uint256 &hash){
 
@@ -111,6 +121,7 @@ RadixMerkleTree::add_given_item (RadixMerkleTreeLeaf::pointer item, bool is_tran
 			assert (false);
 		}
 	}
+
 	dirty_up (stack, index, node);
 	return true;
 }
@@ -192,6 +203,7 @@ RadixMerkleTree::update_given_item (RadixMerkleTreeLeaf::ref item, bool is_trans
 		return true;
 	}
 	dirty_up (stack, index, node);
+	return true;
 }
 	
 

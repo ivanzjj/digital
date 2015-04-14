@@ -6,6 +6,7 @@
 namespace Bubi{
 	#define MP	std::make_pair
 	typedef unsigned int	uint;
+	typedef unsigned char	uchar;
 	typedef base_uint<256>	uint256;
 
 #define BUBI_LOG(log)\

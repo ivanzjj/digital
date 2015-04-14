@@ -28,6 +28,9 @@ public:
 	typedef std::shared_ptr <RadixMerkleTree>& 	ref;
 	typedef std::stack <std::pair<RadixMerkleTreeNode::pointer, int> > RadixMerkleTreeLeafStack;
 
+	RadixMerkleTree ();
+	~RadixMerkleTree ();
+
 	bool 							add_item (RadixMerkleTreeLeaf::pointer item, bool is_transaction);
 	bool 							add_given_item (RadixMerkleTreeLeaf::pointer item, bool is_transaction);
 	RadixMerkleTreeLeafStack 		get_stack (uint256& hash);
@@ -40,6 +43,9 @@ public:
 	RadixMerkleTreeLeaf::pointer 	peek_item (uint256& hash);
 	
 	bool 							update_given_item (RadixMerkleTreeLeaf::ref item, bool is_transaction);
+	RadixMerkleTreeNode::pointer	get_root (){
+		return root_;
+	}
 	
 private:
 	

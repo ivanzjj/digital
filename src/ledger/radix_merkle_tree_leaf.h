@@ -18,8 +18,8 @@ public:
 		return index_;
 	}
 	std::vector <unsigned char>& peek_data ();
-	
-	
+	void data_to_string ();
+
 private:
 	uint256		index_;
 	Serializer	data_;

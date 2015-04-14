@@ -25,7 +25,8 @@ public:
 	:item_(item), type_(node_type){
 		hash_ = item_->get_index ();
 	}
-	RadixMerkleTreeNode (){}
+	RadixMerkleTreeNode ();
+	~RadixMerkleTreeNode ();
 
 	bool 							is_empty_branch (int branch);
 	RadixMerkleTreeNode::pointer 	get_child (int branch);
