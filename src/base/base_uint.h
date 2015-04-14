@@ -26,7 +26,7 @@ public:
 	void zero (){
 		for (int i = 0; i < bytes; i++){
 			*(begin() + i) = 0;
-		
+		}		
 	}
 
 private:
