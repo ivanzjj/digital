@@ -19,8 +19,12 @@ RadixMerkleTreeNode::pointer
 RadixMerkleTree::fetch_node_from_db (uint256 &hash){
 
 	RadixMerkleTreeNode::pointer ret;
-	ret = radix_merkle_tree_db_.fetch (hash);
+	ret = radix_merkle_tree_db_->fetch (hash);
 	return ret;
+}
+void
+RadixMerkleTree::store_node (RadixMerkleTreeNode::pointer node){
+	radix_merkle_tree_db_->store (node);
 }
 
 RadixMerkleTreeNode::pointer

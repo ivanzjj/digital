@@ -17,7 +17,8 @@ public:
 	uint256& get_index (){
 		return index_;
 	}
-	std::vector <unsigned char>& peek_data ();
+	std::vector <char>& peek_data ();
+	Serializer&	peek_serializer ();
 	void data_to_string ();
 
 private:

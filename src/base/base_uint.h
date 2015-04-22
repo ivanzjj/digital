@@ -10,7 +10,7 @@ template <std::size_t bits>
 class base_uint {
 	static_assert ((bits % 32) == 0,
 			"The length of the base_uint must be a multiple of 32.");
-	typedef unsigned char*	pointer;
+	typedef char*	pointer;
 
 public:
 	pointer begin (){
@@ -30,7 +30,7 @@ public:
 			data[i] = 0;
 		}		
 	}
-	void init (unsigned char *ch){
+	void init (const char *ch){
 		for (int i = 0; i < WIDTH; i++){
 			data[i] = ch[i];
 		}
@@ -44,7 +44,7 @@ public:
 
 private:
 	enum {WIDTH = bits / 8};
-	unsigned char data[WIDTH];
+	char data[WIDTH];
 };
 
 template <std::size_t Bits>

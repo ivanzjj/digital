@@ -39,6 +39,9 @@ public:
 	bool 							set_item (RadixMerkleTreeLeaf::ref item, TreeNodeType node_type);
 	bool							is_inner ();
 	uint256&						get_hash ();
+	void							set_hash (uint256& hash);
+	void							encode (Serializer &s);
+	void							decode (std::string value_string);
 	
 private:
 	uint256							hash_;

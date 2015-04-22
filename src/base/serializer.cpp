@@ -4,13 +4,13 @@
 
 namespace Bubi{
 
-std::vector <unsigned char>&
+std::vector <char>&
 Serializer::peek_data (){
 	return data_;
 }
 
 uint256
-Serializer::get_prefix_hash (const unsigned char* ch, int len){
+Serializer::get_prefix_hash (const char* ch, int len){
 	uint256 j[2];
 	SHA512_CTX  ctx;
 	SHA512_Init (&ctx);
@@ -20,7 +20,18 @@ Serializer::get_prefix_hash (const unsigned char* ch, int len){
 }
 
 bool
-Serializer::add_raw (const unsigned char *ch, int len){
+Serializer::add_serializer (Serializer &s){
+	std::vector <char>& vt = s.peek_data ();
+	add_raw (&(*(vt.begin())), vt.size());
+	return true;
+}
+
+std::size_t
+Serializer::peek_data_size (){
+	return data_.size ();
+}
+bool
+Serializer::add_raw (const char *ch, int len){
 	for (int i=0; i<len; i++){
 		data_.push_back (ch[i]);
 	}
@@ -36,7 +47,7 @@ Serializer::add256 (uint256 &hash){
 uint256
 Serializer::get_sha512_half (){
 	uint256 j[2];
-	SHA512 ( &(data_.front()), data_.size(), reinterpret_cast <unsigned char *> (&j[0]) );
+	SHA512 ( reinterpret_cast<unsigned char*>(&(data_.front())), data_.size(), reinterpret_cast <unsigned char *>(&j[0]) );
 	return j[0];
 }
 

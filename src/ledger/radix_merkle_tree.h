@@ -36,6 +36,7 @@ public:
 	RadixMerkleTreeLeafStack 		get_stack (uint256& hash);
 	int 							select_branch (uint256 &hash, int tree_depth);
 	RadixMerkleTreeNode::pointer 	fetch_node_from_db (uint256& hash);
+	void							store_node (RadixMerkleTreeNode::pointer node);
 	RadixMerkleTreeNode::pointer	descend (RadixMerkleTreeNode::ref parent, int branch);
 	void 							dirty_up (RadixMerkleTreeLeafStack& stack, uint256& index, RadixMerkleTreeNode::ref child);
 	bool 							has_item (uint256& hash);
@@ -46,10 +47,13 @@ public:
 	RadixMerkleTreeNode::pointer	get_root (){
 		return root_;
 	}
+	bool	set_database (DataBase::pointer data_ptr){
+		radix_merkle_tree_db_ = data_ptr;
+	}
 	
 private:
 	
-	DataBase	radix_merkle_tree_db_;
+	DataBase::pointer	radix_merkle_tree_db_;
 	std::uint32_t	ledger_sequence_;
 	
 	RadixMerkleTreeNode::pointer 	root_;

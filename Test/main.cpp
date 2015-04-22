@@ -30,14 +30,14 @@ int main (){
 	Ledger::pointer ledger = std::make_shared <Ledger> ();
 	
 	uint256 hash;
-	unsigned char hash_ch[32];
+	char hash_ch[32];
 	for (int i=0;i<32;i++)
 		hash_ch[i] = i;
 	hash.init (hash_ch);
 	hash.to_string ();
 
 	Serializer ss;
-	unsigned char ch[100];
+	char ch[100];
 	for (int i=0;i<100;i++)	ch[i] = i;
 	ss.add_raw (ch, 100);
 

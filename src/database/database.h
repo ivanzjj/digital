@@ -2,6 +2,7 @@
 #define _BUBI_DATABASE_H_
 
 #include <memory>
+#include <vector>
 
 #include <stdio.h>
 
@@ -10,15 +11,16 @@
 
 namespace Bubi {
 
+typedef std::vector<RadixMerkleTreeNode::pointer>	Batch;
+
 class DataBase {
-	typedef std::shared_ptr <DataBase>	pointer;
-	
 public:
+	typedef std::shared_ptr <DataBase>	pointer;
 	DataBase ();
 	~DataBase ();
 
-	RadixMerkleTreeNode::pointer fetch (uint256 &);
-
+	virtual RadixMerkleTreeNode::pointer fetch (uint256 &hash) = 0;
+	virtual void	store (RadixMerkleTreeNode::pointer node) = 0;
 };
 
 }

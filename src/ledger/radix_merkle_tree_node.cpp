@@ -10,9 +10,62 @@ std::mutex RadixMerkleTreeNode::child_lock_;
 RadixMerkleTreeNode::RadixMerkleTreeNode (){
 	branch_mask_ = 0;
 	type_ = TREE_NODE_TYPE_INNER_NODE; 
+	for (int i = 0; i < 16; i++){
+		children_hash_[i].zero ();
+		//TODO
+	}
 }
 RadixMerkleTreeNode::~RadixMerkleTreeNode (){
 
+}
+
+void 
+RadixMerkleTreeNode::set_hash (uint256& hash){
+	hash_ = hash;
+}
+void
+RadixMerkleTreeNode::encode (Serializer &s){
+	s.add_raw (reinterpret_cast<char *>(&type_), sizeof(TreeNodeType));
+	if (type_ == TREE_NODE_TYPE_INNER_NODE){
+		for (int i = 0; i < 16; i++){
+			s.add256 (children_hash_[i]);
+		}
+	}
+	else if (type_ == TREE_NODE_TYPE_TRANSACTION_LEAF){
+		s.add256 (item_->get_index ());
+		s.add_serializer (item_->peek_serializer ());
+	}
+	else if (type_ == TREE_NODE_TYPE_ACCOUNT_LEAF){
+		s.add256 (item_->get_index ());
+		s.add_serializer (item_->peek_serializer ());
+	}
+	else {
+		assert (false);
+	}
+}
+
+void
+RadixMerkleTreeNode::decode (std::string value_string){
+	const char* value_ptr = value_string.c_str ();
+	std::size_t pos = sizeof (TreeNodeType);
+
+	type_ = *(reinterpret_cast<TreeNodeType *>(const_cast<char *>(value_ptr)));
+	if (type_ == TREE_NODE_TYPE_INNER_NODE){
+		for (int i = 0; i < 16; i++){
+			children_hash_[i].init (value_ptr + pos + 32 * i);
+		}	
+	}
+	else if (type_ == TREE_NODE_TYPE_TRANSACTION_LEAF
+			|| type_ == TREE_NODE_TYPE_ACCOUNT_LEAF){
+		uint256 index;
+		index.init (value_ptr + pos);
+		Serializer s;
+		s.add_raw (value_ptr + pos + 32, value_string.length () - pos - 32);
+		item_ = std::make_shared <RadixMerkleTreeLeaf> (index, s);
+	}
+	else{
+		assert (false);
+	}
 }
 
 uint256&
@@ -76,12 +129,12 @@ RadixMerkleTreeNode::update_hash (){
 		nh = s.get_sha512_half ();
 	}
 	else if (type_ == TREE_NODE_TYPE_TRANSACTION_LEAF){
-		std::vector <unsigned char>& data = item_->peek_data();
+		std::vector <char>& data = item_->peek_data();
 		nh = Serializer::get_prefix_hash (&(data.front()), data.size());
 	}
 	else if (type_ == TREE_NODE_TYPE_ACCOUNT_LEAF){
 		Serializer s;
-		std::vector <unsigned char>& data = item_->peek_data ();
+		std::vector <char>& data = item_->peek_data ();
 		s.add_raw (&(data.front()), data.size());
 		s.add256 (item_->get_index ());
 		nh = s.get_sha512_half();
