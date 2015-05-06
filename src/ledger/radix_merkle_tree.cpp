@@ -1,7 +1,9 @@
 #include "radix_merkle_tree.h"
 
 #include <assert.h>
+#include <queue>
 #include "utils.h"
+#include "rocksdb_imp.h"
 
 namespace Bubi{
 
@@ -9,10 +11,26 @@ RadixMerkleTree::RadixMerkleTree (){
 	root_ = std::make_shared <RadixMerkleTreeNode> ();
 	state_ = STATE_VALID;
 	type_ = TYPE_ACCOUNT_TREE;
+	radix_merkle_tree_db_ = RocksdbInstance::instance ();
 }
 
 RadixMerkleTree::~RadixMerkleTree (){
-	
+	Batch batch;
+	RadixMerkleTreeNode::pointer now, tmp;
+	std::queue <RadixMerkleTreeNode::pointer> que;
+	batch.push_back (root_);
+	que.push (root_);
+
+	while (!que.empty ()){
+		now = que.front(); que.pop();
+		if (now->is_inner()){
+			for (int i = 0; i < 16; i++) if (tmp = now->get_child(i)){
+				que.push (tmp);
+				batch.push_back (tmp);
+			}
+		}
+	}
+	radix_merkle_tree_db_->store_batch (batch);
 }
 
 RadixMerkleTreeNode::pointer

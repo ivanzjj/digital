@@ -16,11 +16,12 @@ typedef std::vector<RadixMerkleTreeNode::pointer>	Batch;
 class DataBase {
 public:
 	typedef std::shared_ptr <DataBase>	pointer;
-	DataBase ();
-	~DataBase ();
+	DataBase () {}
+	virtual ~DataBase () {}
 
 	virtual RadixMerkleTreeNode::pointer fetch (uint256 &hash) = 0;
 	virtual void	store (RadixMerkleTreeNode::pointer node) = 0;
+	virtual void	store_batch (Batch &Batch) = 0;
 };
 
 }

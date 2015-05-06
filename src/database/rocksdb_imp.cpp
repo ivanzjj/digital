@@ -1,10 +1,27 @@
 #include "rocksdb_imp.h"
 
+#include "encode_node.h"
+#include "decode_node.h"
+
 namespace Bubi {
 
+std::string RocksdbInstance::db_name_ = "";
+std::shared_ptr<RocksdbImp> RocksdbInstance::rocksdb_ptr_ = nullptr;
+std::mutex	RocksdbInstance::rocksdb_mutex_;
+
+
+std::shared_ptr<RocksdbImp>
+RocksdbInstance::instance (){
+	std::unique_lock<std::mutex> lock (rocksdb_mutex_);
+	if (!rocksdb_ptr_){
+		printf ("rocksdbimp::instance first time\n");
+		rocksdb_ptr_ = std::make_shared<RocksdbImp> (db_name_);
+	}
+	return rocksdb_ptr_;
+}
+
 RocksdbImp::RocksdbImp (std::string name)
-:db_name_(name) {
-	
+:db_name_ (name) {
 	rocksdb::DB* db;
 	rocksdb::Options options;
 
@@ -30,12 +47,13 @@ RocksdbImp::fetch (uint256 &hash){
 	rocksdb::Slice slice (key, key_size);
 	std::string value_string;
 
-	rocksdb::Status status = db_->Get (ReadOptions (), slice, value_string );
+	rocksdb::Status status = db_->Get (rocksdb::ReadOptions (), slice, &value_string );
 	RadixMerkleTreeNode::pointer read_node;
 
 	if (status.ok()){
+		db_->Delete (rocksdb::WriteOptions (), slice);
 		read_node = std::make_shared<RadixMerkleTreeNode> ();
-		read_node->set_child (hash);
+		read_node->set_hash (hash);
 		read_node->decode (value_string);
 	}
 	else{
@@ -46,25 +64,24 @@ RocksdbImp::fetch (uint256 &hash){
 
 void
 RocksdbImp::store (RadixMerkleTreeNode::pointer node){
-	Batch batch;
-	batch.push_back (node);
+	Batch batch = {node};
 	store_batch (batch);
 }
 
 void
 RocksdbImp::store_batch (Batch &batch){
-	rocksdb::WriteBatch batch;
+	rocksdb::WriteBatch wbatch;
 	rocksdb::Status status;
 	EncodeNode encode;
 
 	for (auto e : batch){
 		encode.do_encode (e);
-		batch.Put (
+		wbatch.Put (
 			rocksdb::Slice(encode.get_key(), encode.get_key_size()),
 			rocksdb::Slice(encode.get_value(), encode.get_value_size())
 				);
 	}
-	status = db_->Write (WriteOptions(), &batch);
+	status = db_->Write (rocksdb::WriteOptions(), &wbatch);
 	assert (status.ok());
 }
 

@@ -6,6 +6,7 @@
 #include "ledger.h"
 #include "utils.h"
 #include "serializer.h"
+#include "rocksdb_imp.h"
 
 using namespace Bubi;
 
@@ -27,6 +28,8 @@ void dfs (RadixMerkleTreeNode::pointer node, int tree_depth){
 }
 
 int main (){
+	std::string db_name = "/tmp/rocksdb/radix_tree";
+	RocksdbInstance::set_db_name (db_name);
 	Ledger::pointer ledger = std::make_shared <Ledger> ();
 	
 	uint256 hash;
@@ -45,7 +48,7 @@ int main (){
 		printf ("add_account_tree_entry error!\n");
 		return 1;
 	}
-	dfs (ledger->get_account_tree ()->get_root (), 0);
+//	dfs (ledger->get_account_tree ()->get_root (), 0);
 
 	for (int i = 0; i < 32; i++){
 		hash_ch[i] = i;
@@ -57,7 +60,7 @@ int main (){
 		printf ("add_account_tree_entry error2\n");
 		return 1;
 	}
-	dfs (ledger->get_account_tree ()->get_root (), 0);
+//	dfs (ledger->get_account_tree ()->get_root (), 0);
 
 	
 	for (int i = 0; i < 32; i++)	hash_ch[i] = i;
@@ -70,7 +73,7 @@ int main (){
 		printf ("add_account_tree_entry error2\n");
 		return 1;
 	}
-	dfs (ledger->get_account_tree ()->get_root (), 0);
+//	dfs (ledger->get_account_tree ()->get_root (), 0);
 	
 	for (int i = 0; i < 32; i++){
 		hash_ch[i] = i;
@@ -93,6 +96,6 @@ int main (){
 		printf ("NO\n");
 	}
 	
-	dfs (ledger->get_account_tree ()->get_root (), 0);
+//	dfs (ledger->get_account_tree ()->get_root (), 0);
 	return 0;
 }

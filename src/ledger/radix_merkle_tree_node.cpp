@@ -12,6 +12,7 @@ RadixMerkleTreeNode::RadixMerkleTreeNode (){
 	type_ = TREE_NODE_TYPE_INNER_NODE; 
 	for (int i = 0; i < 16; i++){
 		children_hash_[i].zero ();
+		children_[i] = nullptr;
 		//TODO
 	}
 }
@@ -163,7 +164,7 @@ RadixMerkleTreeNode::make_inner (){
 	hash_.zero ();
 	for (int i=0; i<16; ++i){
 		children_hash_[i].zero ();
-		children_[i] = NULL;
+		children_[i] = nullptr;
 	}
 }
 

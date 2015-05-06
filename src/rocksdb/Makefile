@@ -126,7 +126,7 @@ default: all
 
 #-------------------------------------------------
 # make install related stuff
-INSTALL_PATH ?= /usr/local
+INSTALL_PATH ?= /usr
 
 uninstall:
 	rm -rf $(INSTALL_PATH)/include/rocksdb \

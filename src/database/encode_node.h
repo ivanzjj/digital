@@ -12,10 +12,10 @@ class EncodeNode {
 public:
 	
 	char*		get_key (){
-		return reinterpret_cast<char *>key_ptr;
+		return reinterpret_cast<char *>(key_ptr);
 	}
-	char*		get_value (){
-		return reinterpret_cast<char *>(value_ptr.c_str());
+	const char*		get_value (){
+		return reinterpret_cast<const char *>(value_ptr.c_str());
 	}
 	std::size_t	get_key_size (){
 		return key_size;
