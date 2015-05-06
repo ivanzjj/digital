@@ -28,7 +28,7 @@ void dfs (RadixMerkleTreeNode::pointer node, int tree_depth){
 }
 
 int main (){
-	std::string db_name = "/tmp/rocksdb/radix_tree";
+	std::string db_name = "/home/ivanzjj/radix_tree";
 	RocksdbInstance::set_db_name (db_name);
 	Ledger::pointer ledger = std::make_shared <Ledger> ();
 	
@@ -94,8 +94,7 @@ int main (){
 	}
 	else {
 		printf ("NO\n");
-	}
-	
+	}	
 //	dfs (ledger->get_account_tree ()->get_root (), 0);
 	return 0;
 }

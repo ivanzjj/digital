@@ -15,6 +15,14 @@ RadixMerkleTree::RadixMerkleTree (){
 }
 
 RadixMerkleTree::~RadixMerkleTree (){
+	printf ("RadixMerkleTree done\n");
+	backup_to_database ();
+	printf ("RadixMerkleTree done2\n");
+}
+
+
+void 
+RadixMerkleTree::backup_to_database (){
 	Batch batch;
 	RadixMerkleTreeNode::pointer now, tmp;
 	std::queue <RadixMerkleTreeNode::pointer> que;
@@ -23,6 +31,7 @@ RadixMerkleTree::~RadixMerkleTree (){
 
 	while (!que.empty ()){
 		now = que.front(); que.pop();
+		printf ("AQAAAA\n");
 		if (now->is_inner()){
 			for (int i = 0; i < 16; i++) if (tmp = now->get_child(i)){
 				que.push (tmp);

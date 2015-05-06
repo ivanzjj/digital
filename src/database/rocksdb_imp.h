@@ -14,8 +14,7 @@
 
 namespace Bubi {
 
-class RocksdbImp
-	: public DataBase {
+class RocksdbImp: public DataBase{
 public:
 	typedef std::shared_ptr <RocksdbImp>	pointer;
 	RocksdbImp (std::string name);
@@ -26,7 +25,8 @@ public:
 	void	store_batch (Batch &batch);
 
 private :
-	std::unique_ptr <rocksdb::DB>	db_;
+//	std::unique_ptr <rocksdb::DB>	db_;
+	rocksdb::DB* db_;
 	std::string db_name_;
 };
 
@@ -44,4 +44,4 @@ private:
 	static std::mutex		rocksdb_mutex_;
 };
 }
-#endif
+#endi

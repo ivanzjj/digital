@@ -9,7 +9,7 @@ Ledger::Ledger (){
 	account_tree_ = std::make_shared <RadixMerkleTree> ();
 }
 Ledger::~Ledger (){
-
+	printf ("Ledger done!\n");
 }
 
 RadixMerkleTree::ref

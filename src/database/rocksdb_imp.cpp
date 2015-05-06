@@ -1,5 +1,6 @@
-#include "rocksdb_imp.h"
+#include <unistd.h>
 
+#include "rocksdb_imp.h"
 #include "encode_node.h"
 #include "decode_node.h"
 
@@ -17,26 +18,32 @@ RocksdbInstance::instance (){
 		printf ("rocksdbimp::instance first time\n");
 		rocksdb_ptr_ = std::make_shared<RocksdbImp> (db_name_);
 	}
+	else {
+		printf ("rocksdbimp::instance second time\n");
+	}
 	return rocksdb_ptr_;
 }
 
 RocksdbImp::RocksdbImp (std::string name)
 :db_name_ (name) {
-	rocksdb::DB* db;
 	rocksdb::Options options;
 
 	options.create_if_missing = true;
 	options.IncreaseParallelism ();
 	options.OptimizeLevelStyleCompaction ();
 	
-	rocksdb::Status status = rocksdb::DB::Open (options, db_name_, &db);
+	rocksdb::Status status = rocksdb::DB::Open (options, db_name_, &db_);
 	assert (status.ok());
-	db_.reset (db);
+//	db_.reset (db);
 	BUBI_LOG ("rocksdb open success");
 }
 
 RocksdbImp::~RocksdbImp (){
-	db_.reset ();
+	printf ("RocksdbImp done!\n");
+	rocksdb::Status sss = db_->Put (rocksdb::WriteOptions (), "asdaf", "sdfsafdsaf");
+	assert (sss.ok ());
+//	delete db_;
+//	db_ = NULL;
 	BUBI_LOG ("rocksdb close success");
 }
 

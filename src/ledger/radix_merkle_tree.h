@@ -9,6 +9,7 @@
 
 #include "utils.h"
 #include "database.h"
+#include "rocksdb_imp.h"
 
 namespace Bubi{
 
@@ -50,6 +51,7 @@ public:
 	bool	set_database (DataBase::pointer data_ptr){
 		radix_merkle_tree_db_ = data_ptr;
 	}
+	void	backup_to_database ();
 	
 private:
 	
