@@ -8,12 +8,12 @@ namespace Bubi{
 std::mutex RadixMerkleTreeNode::child_lock_;
 
 RadixMerkleTreeNode::RadixMerkleTreeNode (){
+	hash_.zero ();
 	branch_mask_ = 0;
 	type_ = TREE_NODE_TYPE_INNER_NODE; 
 	for (int i = 0; i < 16; i++){
 		children_hash_[i].zero ();
 		children_[i] = nullptr;
-		//TODO
 	}
 }
 RadixMerkleTreeNode::~RadixMerkleTreeNode (){

@@ -29,7 +29,8 @@ public:
 	typedef std::shared_ptr <RadixMerkleTree>& 	ref;
 	typedef std::stack <std::pair<RadixMerkleTreeNode::pointer, int> > RadixMerkleTreeLeafStack;
 
-	RadixMerkleTree ();
+	RadixMerkleTree (bool is_trsanction_tree);
+	RadixMerkleTree (uint256 hash, std::uint32_t ledger_seq, bool is_transaction_tree);
 	~RadixMerkleTree ();
 
 	bool 							add_item (RadixMerkleTreeLeaf::pointer item, bool is_transaction);
@@ -52,6 +53,7 @@ public:
 		radix_merkle_tree_db_ = data_ptr;
 	}
 	void	backup_to_database ();
+	uint256	get_hash ();
 	
 private:
 	

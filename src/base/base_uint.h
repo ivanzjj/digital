@@ -3,6 +3,7 @@
 
 #include <string>
 #include <iostream>
+#include <sstream>
 
 namespace Bubi{
 
@@ -35,11 +36,14 @@ public:
 			data[i] = ch[i];
 		}
 	}
-	void to_string (){
+	std::string to_string (){
+		std::ostringstream out;
 		for (int i = 0; i < WIDTH; i++){
-			printf ("%02x ", data[i]);
+			out << (char)(data[i]);
 		}
-		printf ("\n");
+		std::string ret = out.str ();
+		return ret;
+		return out.str ();
 	}
 
 private:

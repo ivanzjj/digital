@@ -7,6 +7,7 @@
 #include "utils.h"
 #include "serializer.h"
 #include "rocksdb_imp.h"
+#include "sqlite_imp.h"
 
 using namespace Bubi;
 
@@ -32,6 +33,9 @@ int main (){
 	RocksdbInstance::set_db_name (db_name);
 	Ledger::pointer ledger = std::make_shared <Ledger> ();
 	
+	std::string db_name2 = "/home/ivanzjj/ledger.db";
+	SqliteInstance::set_db_name (db_name2);
+
 	uint256 hash;
 	char hash_ch[32];
 	for (int i=0;i<32;i++)

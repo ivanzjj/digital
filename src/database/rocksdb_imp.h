@@ -10,7 +10,7 @@
 
 #include "database.h"
 #include "radix_merkle_tree_node.h"
-#include <utils.h>
+#include "utils.h"
 
 namespace Bubi {
 
@@ -38,10 +38,10 @@ public:
 	static RocksdbImp::pointer instance ();
 
 private:
-	RocksdbInstance ();
+	RocksdbInstance () {}
 	static std::string		db_name_;
 	static std::shared_ptr<RocksdbImp>	rocksdb_ptr_;
 	static std::mutex		rocksdb_mutex_;
 };
 }
-#endi
+#endif

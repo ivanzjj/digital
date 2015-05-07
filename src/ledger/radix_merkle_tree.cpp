@@ -7,10 +7,10 @@
 
 namespace Bubi{
 
-RadixMerkleTree::RadixMerkleTree (){
+RadixMerkleTree::RadixMerkleTree (bool is_transaction_tree){
 	root_ = std::make_shared <RadixMerkleTreeNode> ();
 	state_ = STATE_VALID;
-	type_ = TYPE_ACCOUNT_TREE;
+	type_ = is_transaction_tree ? TYPE_TRANSACTION_TREE : TYPE_ACCOUNT_TREE;
 	radix_merkle_tree_db_ = RocksdbInstance::instance ();
 }
 
@@ -20,6 +20,12 @@ RadixMerkleTree::~RadixMerkleTree (){
 	printf ("RadixMerkleTree done2\n");
 }
 
+RadixMerkleTree::RadixMerkleTree (uint256 hash, std::uint32_t ledger_seq, bool is_transaction_tree) : ledger_sequence_ (ledger_seq){
+	radix_merkle_tree_db_ = RocksdbInstance::instance ();
+	root_ = fetch_node_from_db (hash);
+	state_ = STATE_VALID;
+	type_ = is_transaction_tree ? TYPE_TRANSACTION_TREE : TYPE_ACCOUNT_TREE;
+}
 
 void 
 RadixMerkleTree::backup_to_database (){
@@ -237,5 +243,10 @@ RadixMerkleTree::update_given_item (RadixMerkleTreeLeaf::ref item, bool is_trans
 	return true;
 }
 	
+uint256
+RadixMerkleTree::get_hash (){
+	return root_->get_hash ();
+}
+
 
 }

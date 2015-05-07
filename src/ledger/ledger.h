@@ -22,8 +22,11 @@ public:
 	bool update_account_tree_entry (RadixMerkleTreeLeaf::ref item);
 	RadixMerkleTree::ref get_transaction_tree ();
 	RadixMerkleTree::ref get_account_tree ();
+	int	 update_account_tree_hash ();
+	int  add_ledger_to_database ();
 
 	Ledger ();
+	Ledger (uint256& hash, uint256& parent_hash, uint256& transaction_tree_hash, uint256& account_tree_hash, std::uint32_t& total_coin, std::uint32_t& ledger_sequence, std::uint32_t& close_time);
 	~Ledger ();
 	
 private:
@@ -32,13 +35,10 @@ private:
 	uint256 		transaction_tree_hash_;
 	uint256			account_tree_hash_;
 	
-	std::uint64_t	total_coins_;
-	std::uint64_t	ledger_sequence_;
+	std::uint32_t	total_coins_;
+	std::uint32_t	ledger_sequence_;
 	
 	std::uint32_t	close_time_;
-	int				close_resolution_;
-	
-	std::uint32_t	fee_;
 	
 	RadixMerkleTree::pointer 	transaction_tree_;
 	RadixMerkleTree::pointer	account_tree_;
