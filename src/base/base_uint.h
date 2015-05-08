@@ -5,7 +5,10 @@
 #include <iostream>
 #include <sstream>
 
+
 namespace Bubi{
+
+int hex_to_decimal (char a);
 
 template <std::size_t bits>
 class base_uint {
@@ -36,14 +39,20 @@ public:
 			data[i] = ch[i];
 		}
 	}
-	std::string to_string (){
-		std::ostringstream out;
+	void binary_init (const char *ch){
+		int a,b;
 		for (int i = 0; i < WIDTH; i++){
-			out << (char)(data[i]);
+			a = (i << 1); b = (i << 1 | 1);
+			data[i] = (hex_to_decimal (ch[a]) << 4) + hex_to_decimal (ch[b]);
+		}	
+	}
+	std::string to_string (){
+		char res[1000];
+		for (int i = 0; i < WIDTH; i++){
+			sprintf (res + (i << 1), "%02x", data[i]);
 		}
-		std::string ret = out.str ();
-		return ret;
-		return out.str ();
+		*(res + (WIDTH << 1)) = 0;
+		return res;
 	}
 
 private:

@@ -25,7 +25,7 @@ public:
 	:item_(item), type_(node_type){
 		hash_ = item_->get_index ();
 	}
-	RadixMerkleTreeNode ();
+	RadixMerkleTreeNode (bool is_transaction_tree = false);
 	~RadixMerkleTreeNode ();
 
 	bool 							is_empty_branch (int branch);
@@ -49,6 +49,7 @@ private:
 	RadixMerkleTreeNode::pointer	children_[16];
 	RadixMerkleTreeLeaf::pointer	item_;
 	
+	bool							is_transaction_tree_;
 	TreeNodeType					type_;
 	uint							branch_mask_;
 	

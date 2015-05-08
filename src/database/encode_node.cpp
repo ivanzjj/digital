@@ -2,12 +2,14 @@
 
 #include "serializer.h"
 
+#include <iostream>
+
 namespace Bubi {
 
 void 
 EncodeNode::do_encode (RadixMerkleTreeNode::pointer node){
-	key_size = node->get_hash ().get_bytes ();
-	key_ptr = node->get_hash ().begin ();
+	key_ptr = node->get_hash ().to_string ();
+	key_size = key_ptr.length ();
 	
 	Serializer s;
 	node->encode (s);

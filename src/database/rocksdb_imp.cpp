@@ -49,16 +49,14 @@ RocksdbImp::~RocksdbImp (){
 
 RadixMerkleTreeNode::pointer
 RocksdbImp::fetch (uint256 &hash){
-	std::size_t	key_size = hash.get_bytes ();
-	char* key = hash.begin ();
-	rocksdb::Slice slice (key, key_size);
-	std::string value_string;
+	std::string key_ptr = hash.to_string ();
+	std::string value_string = "";
 
-	rocksdb::Status status = db_->Get (rocksdb::ReadOptions (), slice, &value_string );
+	rocksdb::Status status = db_->Get (rocksdb::ReadOptions (), key_ptr, &value_string);
+
 	RadixMerkleTreeNode::pointer read_node;
-
 	if (status.ok()){
-		db_->Delete (rocksdb::WriteOptions (), slice);
+		db_->Delete (rocksdb::WriteOptions (), key_ptr);
 		read_node = std::make_shared<RadixMerkleTreeNode> ();
 		read_node->set_hash (hash);
 		read_node->decode (value_string);
@@ -79,14 +77,15 @@ void
 RocksdbImp::store_batch (Batch &batch){
 	rocksdb::WriteBatch wbatch;
 	rocksdb::Status status;
-	EncodeNode encode;
 
 	for (auto e : batch){
+		EncodeNode encode;
 		encode.do_encode (e);
-		wbatch.Put (
-			rocksdb::Slice(encode.get_key(), encode.get_key_size()),
-			rocksdb::Slice(encode.get_value(), encode.get_value_size())
-				);
+		
+		std::string key_ptr = encode.get_key_ptr ();
+		std::string value_ptr = encode.get_value_ptr ();
+
+		wbatch.Put (encode.get_key_ptr(), encode.get_value_ptr());
 	}
 	status = db_->Write (rocksdb::WriteOptions(), &wbatch);
 	assert (status.ok());

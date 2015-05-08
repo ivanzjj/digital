@@ -21,14 +21,15 @@ Ledger::Ledger (uint256& hash, uint256& parent_hash, uint256& transaction_tree_h
 }
 
 Ledger::Ledger (){
+	hash_.zero ();
 	parent_hash_.zero ();
-	transaction_tree_hash_.zero ();
-	account_tree_hash_.zero ();
 	total_coins_ = 0;
 	ledger_sequence_ = 0;
 	close_time_ = 0;
-	transaction_tree_ = std::make_shared <RadixMerkleTree> (false);
-	account_tree_ = std::make_shared <RadixMerkleTree> (true);
+	transaction_tree_ = std::make_shared <RadixMerkleTree> (true);
+	account_tree_ = std::make_shared <RadixMerkleTree> (false);
+	update_account_tree_hash ();
+	update_transaction_tree_hash ();
 }
 Ledger::~Ledger (){
 	printf ("Ledger done!\n");
@@ -49,12 +50,14 @@ Ledger::add_ledger_to_database (){
 
 	out << "insert into BubiLedger (ledger_sequence,hash,phash,txhash,accounthash,total_coins,close_time) values (" << ledger_sequence_ << ",'" << hash_.to_string () << "','" << parent_hash_.to_string() << "','" << transaction_tree_hash_.to_string() << "','" << account_tree_hash_.to_string() << "'," << total_coins_ << "," << close_time_ << ");";
 	sql = out.str ();
+	std::cout << sql << std::endl;
 	ret = ledger_db->exec_sql (sql, NULL);
 	if (ret != SQLITE_OK){
 		std::ostringstream out2;
 
 		out2 << "update BubiLedger set hash='" << hash_.to_string()<< "',phash='" << parent_hash_.to_string() << "',txhash='" << transaction_tree_hash_.to_string() << "',accounthash='" << account_tree_hash_.to_string() << "',total_coins=" << total_coins_ << ",close_time=" << close_time_ << " where ledger_sequence=" << ledger_sequence_ << ";";
 		sql = out2.str ();
+		std::cout << sql << std::endl;
 		ret = ledger_db->exec_sql (sql, NULL);
 		if (ret != SQLITE_OK){
 			BUBI_LOG ("add ledger failed");
@@ -75,8 +78,26 @@ Ledger::get_transaction_tree (){
 }
 
 int
+Ledger::update_ledger_hash (){
+	Serializer s;
+	s.add256 (parent_hash_);
+	s.add256 (transaction_tree_hash_);
+	s.add256 (account_tree_hash_);
+	s.add_raw ((char *)&total_coins_, sizeof (total_coins_));
+	s.add_raw ((char *)&ledger_sequence_, sizeof (ledger_sequence_));
+	s.add_raw ((char *)&close_time_, sizeof (close_time_));
+	hash_ = s.get_sha512_half ();
+}
+
+int
 Ledger::update_account_tree_hash (){
 	account_tree_hash_ = account_tree_->get_hash ();
+	update_ledger_hash ();
+}
+int
+Ledger::update_transaction_tree_hash (){
+	transaction_tree_hash_ = transaction_tree_->get_hash ();
+	update_ledger_hash ();
 }
 
 bool 
@@ -95,7 +116,9 @@ Ledger::has_account (uint256& hash){
 
 bool
 Ledger::update_account_tree_entry (RadixMerkleTreeLeaf::ref item){
-	return account_tree_->update_given_item (item, false);
+	account_tree_->update_given_item (item, false);
+	update_account_tree_hash ();
+	return true;
 }
 
 }

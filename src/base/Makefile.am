@@ -4,6 +4,7 @@ libbubi_base_la_CXXFLAGS =	-std=c++11	\
 							$(NULL)
 
 libbubi_base_la_SOURCES =	serializer.cpp	\
+							base_uint.cpp	\
 							$(NULL)
 	
 libbubi_base_la_LDFLAGS =				\
