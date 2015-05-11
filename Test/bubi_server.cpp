@@ -9,7 +9,8 @@
 #include "sqlite_imp.h"
 #include "rocksdb_imp.h"
 #include "ledger.h"
-
+#include "transaction.h"
+#include "account.h"
 
 using namespace Bubi;
 
@@ -170,6 +171,80 @@ void fetch_from_db (){
 	}
 }
 
+
+/***
+  transaction test
+***/
+void transaction_serializer_test (){
+	uint256 source;
+	char hash_ch[32];
+	for (int i = 0; i < 32; i++){
+		hash_ch[i] = i;
+	}
+	source.init (hash_ch);
+
+	uint256 destination;
+	for (int i =  0; i < 32; i++)
+		hash_ch[i] = 32 - i;
+	destination.init (hash_ch);
+
+	uint256 ledger_hash;
+	for (int i = 0; i < 32; i++){
+		hash_ch[i] = i;
+	}
+	hash_ch[0] = 10;
+	ledger_hash.init (hash_ch);
+
+	Transaction::pointer tx = std::make_shared<Transaction> (source, destination, 20.0, ledger_hash);
+
+	std::string res = tx->serializer ();
+	std::cout << res << std::endl;
+
+	Transaction::pointer tx2 = std::make_shared<Transaction> ();
+	tx2->unserializer (res);
+
+	std::cout << "***********OUT***************" << std::endl;
+
+	std::cout << source.to_string () << std::endl;
+	std::cout << tx2->get_source_address ().to_string () << std::endl;
+	std::cout << destination.to_string () << std::endl;
+	std::cout << tx2->get_destination_address ().to_string ()  << std::endl;
+	std::cout << tx2->get_payment_amount () << std::endl;
+	std::cout << ledger_hash.to_string () << std::endl;
+	std::cout << tx2->get_last_ledger_hash ().to_string () << std::endl;
+
+}
+
+void account_serializer_test (){
+	uint256 address;
+	char hash_ch[32];
+	for (int i = 0; i < 32; i++){
+		hash_ch[i] = i;
+	}
+	address.init (hash_ch);
+
+	uint256 previous;
+	for (int i = 0; i < 32; i++)
+		hash_ch[i] = 32 - i;
+	previous.init (hash_ch);
+
+	Account::pointer acc = std::make_shared <Account> (address, 20, previous);
+	std::string res = acc->serializer ();
+
+	std::cout << "******************** ACCOUNT OUT ***************" << std::endl;
+	std::cout << res << std::endl;
+	
+	Account::pointer acc2 = std::make_shared <Account> ();
+	acc2->unserializer (res);
+
+	std::cout << address.to_string () << std::endl;
+	std::cout << acc2->get_account_address ().to_string () << std::endl;
+	std::cout << acc2->get_account_balance () << std::endl;
+	std::cout << previous.to_string () << std::endl;
+	std::cout << acc2->get_previous_ledger_hash ().to_string () << std::endl;
+
+}
+
 int main (){
 	RocksdbInstance::set_db_name (radix_db_name);
 	SqliteInstance::set_db_name (ledger_db_name);
@@ -180,5 +255,9 @@ int main (){
 //	test ();	
 	fetch_from_db ();
 	dfs (last_ledger->get_account_tree ()->get_root (), 0);
+
+//	transaction_serializer_test ();	
+//	account_serializer_test ();
+
 	return 0;
 }

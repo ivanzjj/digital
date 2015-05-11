@@ -1,0 +1,16 @@
+package bubi;
+message Transaction
+{
+	required string		source_address = 1;
+	required string		destination_address = 2;
+	optional double		payment_amount = 3;
+	required string		last_ledger_hash = 4;
+}
+
+message Account
+{
+	required string		account_address = 1;
+	required double		account_balance = 2;
+	required string		previous_ledger_hash = 3;
+
+}
