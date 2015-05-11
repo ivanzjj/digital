@@ -4,6 +4,14 @@
 
 namespace Bubi{
 
+
+Serializer::Serializer (std::string str){
+	std::size_t sz = str.length ();
+	for (int i = 0; i < sz; i++){
+		data_.push_back (str[i]);
+	}
+}
+
 std::vector <char>&
 Serializer::peek_data (){
 	return data_;

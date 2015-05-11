@@ -90,7 +90,7 @@ int recover_ledger (){
 		return 1;	
 }
 
-
+#if 0
 int test (){
 	uint256 hash;
 	char hash_ch[32];
@@ -129,7 +129,7 @@ int test (){
 		last_ledger->update_account_tree_entry (new_item);
 	}
 }
-
+#endif
 
 void dfs (RadixMerkleTreeNode::pointer node, int tree_depth){
 	if (!node->is_inner ()){
@@ -175,6 +175,7 @@ void fetch_from_db (){
 /***
   transaction test
 ***/
+#if 0
 void transaction_serializer_test (){
 	uint256 source;
 	char hash_ch[32];
@@ -188,14 +189,11 @@ void transaction_serializer_test (){
 		hash_ch[i] = 32 - i;
 	destination.init (hash_ch);
 
-	uint256 ledger_hash;
-	for (int i = 0; i < 32; i++){
-		hash_ch[i] = i;
-	}
-	hash_ch[0] = 10;
-	ledger_hash.init (hash_ch);
+	uint256 sp_ledger, sp_tx, dp_ledger, dp_tx;
+	sp_ledger.zero (); sp_tx.zero ();
+	dp_ledger.zero (); dp_tx.zero ();
 
-	Transaction::pointer tx = std::make_shared<Transaction> (source, destination, 20.0, ledger_hash);
+	Transaction::pointer tx = std::make_shared<Transaction> (source, destination, 20.0, sp_ledger, sp_tx, dp_ledger, dp_tx);
 
 	std::string res = tx->serializer ();
 	std::cout << res << std::endl;
@@ -210,11 +208,16 @@ void transaction_serializer_test (){
 	std::cout << destination.to_string () << std::endl;
 	std::cout << tx2->get_destination_address ().to_string ()  << std::endl;
 	std::cout << tx2->get_payment_amount () << std::endl;
-	std::cout << ledger_hash.to_string () << std::endl;
-	std::cout << tx2->get_last_ledger_hash ().to_string () << std::endl;
+
+	std::cout << tx2->get_source_previous_ledger_hash ().to_string () << std::endl;
+	std::cout << tx2->get_source_previous_tx_hash ().to_string () << std::endl;
+	std::cout << tx2->get_destination_previous_ledger_hash ().to_string () << std::endl;
+	std::cout << tx2->get_destination_previous_tx_hash ().to_string () << std::endl;
 
 }
+#endif
 
+#if 0
 void account_serializer_test (){
 	uint256 address;
 	char hash_ch[32];
@@ -227,8 +230,11 @@ void account_serializer_test (){
 	for (int i = 0; i < 32; i++)
 		hash_ch[i] = 32 - i;
 	previous.init (hash_ch);
+	
+	uint256 p_tx;
+	p_tx.zero ();
 
-	Account::pointer acc = std::make_shared <Account> (address, 20, previous);
+	Account::pointer acc = std::make_shared <Account> (address, 20, previous, p_tx);
 	std::string res = acc->serializer ();
 
 	std::cout << "******************** ACCOUNT OUT ***************" << std::endl;
@@ -242,8 +248,10 @@ void account_serializer_test (){
 	std::cout << acc2->get_account_balance () << std::endl;
 	std::cout << previous.to_string () << std::endl;
 	std::cout << acc2->get_previous_ledger_hash ().to_string () << std::endl;
+	std::cout << acc2->get_previous_tx_hash ().to_string () << std::endl;
 
 }
+#endif
 
 int main (){
 	RocksdbInstance::set_db_name (radix_db_name);

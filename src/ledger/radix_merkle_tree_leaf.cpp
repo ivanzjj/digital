@@ -17,6 +17,16 @@ RadixMerkleTreeLeaf::peek_serializer (){
 	return data_;
 }
 
+std::string
+RadixMerkleTreeLeaf::peek_string (){
+	std::vector <char>& ret = peek_data ();
+	std::string res_str = "";
+	std::size_t sz = ret.size ();
+	for (int i = 0; i < sz; i++)
+		res_str.push_back (ret[i]);
+	return res_str;
+}
+
 std::vector <char> &
 RadixMerkleTreeLeaf::peek_data (){
 	return data_.peek_data();

@@ -10,6 +10,7 @@
 #include "utils.h"
 #include "database.h"
 #include "rocksdb_imp.h"
+#include "account.h"
 
 namespace Bubi{
 
@@ -54,6 +55,7 @@ public:
 	}
 	void	backup_to_database ();
 	uint256	get_hash ();
+	Account::pointer	get_account_entry (uint256& hash);
 	
 private:
 	

@@ -37,11 +37,14 @@ void protobuf_AssignDesc_transaction_2eproto() {
       "transaction.proto");
   GOOGLE_CHECK(file != NULL);
   Transaction_descriptor_ = file->message_type(0);
-  static const int Transaction_offsets_[4] = {
+  static const int Transaction_offsets_[7] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Transaction, source_address_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Transaction, destination_address_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Transaction, payment_amount_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Transaction, last_ledger_hash_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Transaction, source_previous_ledger_seq_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Transaction, source_previous_tx_hash_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Transaction, destination_previous_ledger_seq_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Transaction, destination_previous_tx_hash_),
   };
   Transaction_reflection_ =
     ::google::protobuf::internal::GeneratedMessageReflection::NewGeneratedMessageReflection(
@@ -55,10 +58,11 @@ void protobuf_AssignDesc_transaction_2eproto() {
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Transaction, _internal_metadata_),
       -1);
   Account_descriptor_ = file->message_type(1);
-  static const int Account_offsets_[3] = {
+  static const int Account_offsets_[4] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Account, account_address_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Account, account_balance_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Account, previous_ledger_hash_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Account, previous_ledger_seq_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Account, previous_tx_hash_),
   };
   Account_reflection_ =
     ::google::protobuf::internal::GeneratedMessageReflection::NewGeneratedMessageReflection(
@@ -105,12 +109,16 @@ void protobuf_AddDesc_transaction_2eproto() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-    "\n\021transaction.proto\022\004bubi\"t\n\013Transaction"
-    "\022\026\n\016source_address\030\001 \002(\t\022\033\n\023destination_"
-    "address\030\002 \002(\t\022\026\n\016payment_amount\030\003 \001(\001\022\030\n"
-    "\020last_ledger_hash\030\004 \002(\t\"Y\n\007Account\022\027\n\017ac"
-    "count_address\030\001 \002(\t\022\027\n\017account_balance\030\002"
-    " \002(\001\022\034\n\024previous_ledger_hash\030\003 \002(\t", 234);
+    "\n\021transaction.proto\022\004bubi\"\356\001\n\013Transactio"
+    "n\022\026\n\016source_address\030\001 \002(\t\022\033\n\023destination"
+    "_address\030\002 \002(\t\022\026\n\016payment_amount\030\003 \001(\001\022\""
+    "\n\032source_previous_ledger_seq\030\004 \002(\r\022\037\n\027so"
+    "urce_previous_tx_hash\030\005 \002(\t\022\'\n\037destinati"
+    "on_previous_ledger_seq\030\006 \002(\r\022$\n\034destinat"
+    "ion_previous_tx_hash\030\007 \002(\t\"r\n\007Account\022\027\n"
+    "\017account_address\030\001 \002(\t\022\027\n\017account_balanc"
+    "e\030\002 \002(\001\022\033\n\023previous_ledger_seq\030\003 \002(\r\022\030\n\020"
+    "previous_tx_hash\030\004 \002(\t", 382);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "transaction.proto", &protobuf_RegisterTypes);
   Transaction::default_instance_ = new Transaction();
@@ -143,7 +151,10 @@ static void MergeFromFail(int line) {
 const int Transaction::kSourceAddressFieldNumber;
 const int Transaction::kDestinationAddressFieldNumber;
 const int Transaction::kPaymentAmountFieldNumber;
-const int Transaction::kLastLedgerHashFieldNumber;
+const int Transaction::kSourcePreviousLedgerSeqFieldNumber;
+const int Transaction::kSourcePreviousTxHashFieldNumber;
+const int Transaction::kDestinationPreviousLedgerSeqFieldNumber;
+const int Transaction::kDestinationPreviousTxHashFieldNumber;
 #endif  // !_MSC_VER
 
 Transaction::Transaction()
@@ -169,7 +180,10 @@ void Transaction::SharedCtor() {
   source_address_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   destination_address_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   payment_amount_ = 0;
-  last_ledger_hash_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  source_previous_ledger_seq_ = 0u;
+  source_previous_tx_hash_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  destination_previous_ledger_seq_ = 0u;
+  destination_previous_tx_hash_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -181,7 +195,8 @@ Transaction::~Transaction() {
 void Transaction::SharedDtor() {
   source_address_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   destination_address_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  last_ledger_hash_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  source_previous_tx_hash_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  destination_previous_tx_hash_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   if (this != default_instance_) {
   }
 }
@@ -212,7 +227,16 @@ Transaction* Transaction::New(::google::protobuf::Arena* arena) const {
 }
 
 void Transaction::Clear() {
-  if (_has_bits_[0 / 32] & 15) {
+#define ZR_HELPER_(f) reinterpret_cast<char*>(\
+  &reinterpret_cast<Transaction*>(16)->f)
+
+#define ZR_(first, last) do {\
+  ::memset(&first, 0,\
+           ZR_HELPER_(last) - ZR_HELPER_(first) + sizeof(last));\
+} while (0)
+
+  if (_has_bits_[0 / 32] & 127) {
+    ZR_(source_previous_ledger_seq_, destination_previous_ledger_seq_);
     if (has_source_address()) {
       source_address_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
     }
@@ -220,10 +244,17 @@ void Transaction::Clear() {
       destination_address_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
     }
     payment_amount_ = 0;
-    if (has_last_ledger_hash()) {
-      last_ledger_hash_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    if (has_source_previous_tx_hash()) {
+      source_previous_tx_hash_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    }
+    if (has_destination_previous_tx_hash()) {
+      destination_previous_tx_hash_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
     }
   }
+
+#undef ZR_HELPER_
+#undef ZR_
+
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
   if (_internal_metadata_.have_unknown_fields()) {
     mutable_unknown_fields()->Clear();
@@ -284,20 +315,67 @@ bool Transaction::MergePartialFromCodedStream(
         } else {
           goto handle_unusual;
         }
-        if (input->ExpectTag(34)) goto parse_last_ledger_hash;
+        if (input->ExpectTag(32)) goto parse_source_previous_ledger_seq;
         break;
       }
 
-      // required string last_ledger_hash = 4;
+      // required uint32 source_previous_ledger_seq = 4;
       case 4: {
-        if (tag == 34) {
-         parse_last_ledger_hash:
+        if (tag == 32) {
+         parse_source_previous_ledger_seq:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_UINT32>(
+                 input, &source_previous_ledger_seq_)));
+          set_has_source_previous_ledger_seq();
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(42)) goto parse_source_previous_tx_hash;
+        break;
+      }
+
+      // required string source_previous_tx_hash = 5;
+      case 5: {
+        if (tag == 42) {
+         parse_source_previous_tx_hash:
           DO_(::google::protobuf::internal::WireFormatLite::ReadString(
-                input, this->mutable_last_ledger_hash()));
+                input, this->mutable_source_previous_tx_hash()));
           ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
-            this->last_ledger_hash().data(), this->last_ledger_hash().length(),
+            this->source_previous_tx_hash().data(), this->source_previous_tx_hash().length(),
             ::google::protobuf::internal::WireFormat::PARSE,
-            "bubi.Transaction.last_ledger_hash");
+            "bubi.Transaction.source_previous_tx_hash");
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(48)) goto parse_destination_previous_ledger_seq;
+        break;
+      }
+
+      // required uint32 destination_previous_ledger_seq = 6;
+      case 6: {
+        if (tag == 48) {
+         parse_destination_previous_ledger_seq:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_UINT32>(
+                 input, &destination_previous_ledger_seq_)));
+          set_has_destination_previous_ledger_seq();
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(58)) goto parse_destination_previous_tx_hash;
+        break;
+      }
+
+      // required string destination_previous_tx_hash = 7;
+      case 7: {
+        if (tag == 58) {
+         parse_destination_previous_tx_hash:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->mutable_destination_previous_tx_hash()));
+          ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
+            this->destination_previous_tx_hash().data(), this->destination_previous_tx_hash().length(),
+            ::google::protobuf::internal::WireFormat::PARSE,
+            "bubi.Transaction.destination_previous_tx_hash");
         } else {
           goto handle_unusual;
         }
@@ -355,14 +433,34 @@ void Transaction::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::WriteDouble(3, this->payment_amount(), output);
   }
 
-  // required string last_ledger_hash = 4;
-  if (has_last_ledger_hash()) {
+  // required uint32 source_previous_ledger_seq = 4;
+  if (has_source_previous_ledger_seq()) {
+    ::google::protobuf::internal::WireFormatLite::WriteUInt32(4, this->source_previous_ledger_seq(), output);
+  }
+
+  // required string source_previous_tx_hash = 5;
+  if (has_source_previous_tx_hash()) {
     ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
-      this->last_ledger_hash().data(), this->last_ledger_hash().length(),
+      this->source_previous_tx_hash().data(), this->source_previous_tx_hash().length(),
       ::google::protobuf::internal::WireFormat::SERIALIZE,
-      "bubi.Transaction.last_ledger_hash");
+      "bubi.Transaction.source_previous_tx_hash");
     ::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
-      4, this->last_ledger_hash(), output);
+      5, this->source_previous_tx_hash(), output);
+  }
+
+  // required uint32 destination_previous_ledger_seq = 6;
+  if (has_destination_previous_ledger_seq()) {
+    ::google::protobuf::internal::WireFormatLite::WriteUInt32(6, this->destination_previous_ledger_seq(), output);
+  }
+
+  // required string destination_previous_tx_hash = 7;
+  if (has_destination_previous_tx_hash()) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
+      this->destination_previous_tx_hash().data(), this->destination_previous_tx_hash().length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE,
+      "bubi.Transaction.destination_previous_tx_hash");
+    ::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
+      7, this->destination_previous_tx_hash(), output);
   }
 
   if (_internal_metadata_.have_unknown_fields()) {
@@ -402,15 +500,36 @@ void Transaction::SerializeWithCachedSizes(
     target = ::google::protobuf::internal::WireFormatLite::WriteDoubleToArray(3, this->payment_amount(), target);
   }
 
-  // required string last_ledger_hash = 4;
-  if (has_last_ledger_hash()) {
+  // required uint32 source_previous_ledger_seq = 4;
+  if (has_source_previous_ledger_seq()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(4, this->source_previous_ledger_seq(), target);
+  }
+
+  // required string source_previous_tx_hash = 5;
+  if (has_source_previous_tx_hash()) {
     ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
-      this->last_ledger_hash().data(), this->last_ledger_hash().length(),
+      this->source_previous_tx_hash().data(), this->source_previous_tx_hash().length(),
       ::google::protobuf::internal::WireFormat::SERIALIZE,
-      "bubi.Transaction.last_ledger_hash");
+      "bubi.Transaction.source_previous_tx_hash");
     target =
       ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
-        4, this->last_ledger_hash(), target);
+        5, this->source_previous_tx_hash(), target);
+  }
+
+  // required uint32 destination_previous_ledger_seq = 6;
+  if (has_destination_previous_ledger_seq()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(6, this->destination_previous_ledger_seq(), target);
+  }
+
+  // required string destination_previous_tx_hash = 7;
+  if (has_destination_previous_tx_hash()) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
+      this->destination_previous_tx_hash().data(), this->destination_previous_tx_hash().length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE,
+      "bubi.Transaction.destination_previous_tx_hash");
+    target =
+      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
+        7, this->destination_previous_tx_hash(), target);
   }
 
   if (_internal_metadata_.have_unknown_fields()) {
@@ -438,11 +557,32 @@ int Transaction::RequiredFieldsByteSizeFallback() const {
         this->destination_address());
   }
 
-  if (has_last_ledger_hash()) {
-    // required string last_ledger_hash = 4;
+  if (has_source_previous_ledger_seq()) {
+    // required uint32 source_previous_ledger_seq = 4;
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::UInt32Size(
+        this->source_previous_ledger_seq());
+  }
+
+  if (has_source_previous_tx_hash()) {
+    // required string source_previous_tx_hash = 5;
     total_size += 1 +
       ::google::protobuf::internal::WireFormatLite::StringSize(
-        this->last_ledger_hash());
+        this->source_previous_tx_hash());
+  }
+
+  if (has_destination_previous_ledger_seq()) {
+    // required uint32 destination_previous_ledger_seq = 6;
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::UInt32Size(
+        this->destination_previous_ledger_seq());
+  }
+
+  if (has_destination_previous_tx_hash()) {
+    // required string destination_previous_tx_hash = 7;
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::StringSize(
+        this->destination_previous_tx_hash());
   }
 
   return total_size;
@@ -450,7 +590,7 @@ int Transaction::RequiredFieldsByteSizeFallback() const {
 int Transaction::ByteSize() const {
   int total_size = 0;
 
-  if (((_has_bits_[0] & 0x0000000b) ^ 0x0000000b) == 0) {  // All required fields are present.
+  if (((_has_bits_[0] & 0x0000007b) ^ 0x0000007b) == 0) {  // All required fields are present.
     // required string source_address = 1;
     total_size += 1 +
       ::google::protobuf::internal::WireFormatLite::StringSize(
@@ -461,10 +601,25 @@ int Transaction::ByteSize() const {
       ::google::protobuf::internal::WireFormatLite::StringSize(
         this->destination_address());
 
-    // required string last_ledger_hash = 4;
+    // required uint32 source_previous_ledger_seq = 4;
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::UInt32Size(
+        this->source_previous_ledger_seq());
+
+    // required string source_previous_tx_hash = 5;
     total_size += 1 +
       ::google::protobuf::internal::WireFormatLite::StringSize(
-        this->last_ledger_hash());
+        this->source_previous_tx_hash());
+
+    // required uint32 destination_previous_ledger_seq = 6;
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::UInt32Size(
+        this->destination_previous_ledger_seq());
+
+    // required string destination_previous_tx_hash = 7;
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::StringSize(
+        this->destination_previous_tx_hash());
 
   } else {
     total_size += RequiredFieldsByteSizeFallback();
@@ -511,9 +666,19 @@ void Transaction::MergeFrom(const Transaction& from) {
     if (from.has_payment_amount()) {
       set_payment_amount(from.payment_amount());
     }
-    if (from.has_last_ledger_hash()) {
-      set_has_last_ledger_hash();
-      last_ledger_hash_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.last_ledger_hash_);
+    if (from.has_source_previous_ledger_seq()) {
+      set_source_previous_ledger_seq(from.source_previous_ledger_seq());
+    }
+    if (from.has_source_previous_tx_hash()) {
+      set_has_source_previous_tx_hash();
+      source_previous_tx_hash_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.source_previous_tx_hash_);
+    }
+    if (from.has_destination_previous_ledger_seq()) {
+      set_destination_previous_ledger_seq(from.destination_previous_ledger_seq());
+    }
+    if (from.has_destination_previous_tx_hash()) {
+      set_has_destination_previous_tx_hash();
+      destination_previous_tx_hash_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.destination_previous_tx_hash_);
     }
   }
   if (from._internal_metadata_.have_unknown_fields()) {
@@ -534,7 +699,7 @@ void Transaction::CopyFrom(const Transaction& from) {
 }
 
 bool Transaction::IsInitialized() const {
-  if ((_has_bits_[0] & 0x0000000b) != 0x0000000b) return false;
+  if ((_has_bits_[0] & 0x0000007b) != 0x0000007b) return false;
 
   return true;
 }
@@ -547,7 +712,10 @@ void Transaction::InternalSwap(Transaction* other) {
   source_address_.Swap(&other->source_address_);
   destination_address_.Swap(&other->destination_address_);
   std::swap(payment_amount_, other->payment_amount_);
-  last_ledger_hash_.Swap(&other->last_ledger_hash_);
+  std::swap(source_previous_ledger_seq_, other->source_previous_ledger_seq_);
+  source_previous_tx_hash_.Swap(&other->source_previous_tx_hash_);
+  std::swap(destination_previous_ledger_seq_, other->destination_previous_ledger_seq_);
+  destination_previous_tx_hash_.Swap(&other->destination_previous_tx_hash_);
   std::swap(_has_bits_[0], other->_has_bits_[0]);
   _internal_metadata_.Swap(&other->_internal_metadata_);
   std::swap(_cached_size_, other->_cached_size_);
@@ -694,57 +862,158 @@ void Transaction::InternalSwap(Transaction* other) {
   // @@protoc_insertion_point(field_set:bubi.Transaction.payment_amount)
 }
 
-// required string last_ledger_hash = 4;
- bool Transaction::has_last_ledger_hash() const {
+// required uint32 source_previous_ledger_seq = 4;
+ bool Transaction::has_source_previous_ledger_seq() const {
   return (_has_bits_[0] & 0x00000008u) != 0;
 }
- void Transaction::set_has_last_ledger_hash() {
+ void Transaction::set_has_source_previous_ledger_seq() {
   _has_bits_[0] |= 0x00000008u;
 }
- void Transaction::clear_has_last_ledger_hash() {
+ void Transaction::clear_has_source_previous_ledger_seq() {
   _has_bits_[0] &= ~0x00000008u;
 }
- void Transaction::clear_last_ledger_hash() {
-  last_ledger_hash_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  clear_has_last_ledger_hash();
+ void Transaction::clear_source_previous_ledger_seq() {
+  source_previous_ledger_seq_ = 0u;
+  clear_has_source_previous_ledger_seq();
 }
- const ::std::string& Transaction::last_ledger_hash() const {
-  // @@protoc_insertion_point(field_get:bubi.Transaction.last_ledger_hash)
-  return last_ledger_hash_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+ ::google::protobuf::uint32 Transaction::source_previous_ledger_seq() const {
+  // @@protoc_insertion_point(field_get:bubi.Transaction.source_previous_ledger_seq)
+  return source_previous_ledger_seq_;
 }
- void Transaction::set_last_ledger_hash(const ::std::string& value) {
-  set_has_last_ledger_hash();
-  last_ledger_hash_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
-  // @@protoc_insertion_point(field_set:bubi.Transaction.last_ledger_hash)
+ void Transaction::set_source_previous_ledger_seq(::google::protobuf::uint32 value) {
+  set_has_source_previous_ledger_seq();
+  source_previous_ledger_seq_ = value;
+  // @@protoc_insertion_point(field_set:bubi.Transaction.source_previous_ledger_seq)
 }
- void Transaction::set_last_ledger_hash(const char* value) {
-  set_has_last_ledger_hash();
-  last_ledger_hash_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
-  // @@protoc_insertion_point(field_set_char:bubi.Transaction.last_ledger_hash)
+
+// required string source_previous_tx_hash = 5;
+ bool Transaction::has_source_previous_tx_hash() const {
+  return (_has_bits_[0] & 0x00000010u) != 0;
 }
- void Transaction::set_last_ledger_hash(const char* value, size_t size) {
-  set_has_last_ledger_hash();
-  last_ledger_hash_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+ void Transaction::set_has_source_previous_tx_hash() {
+  _has_bits_[0] |= 0x00000010u;
+}
+ void Transaction::clear_has_source_previous_tx_hash() {
+  _has_bits_[0] &= ~0x00000010u;
+}
+ void Transaction::clear_source_previous_tx_hash() {
+  source_previous_tx_hash_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  clear_has_source_previous_tx_hash();
+}
+ const ::std::string& Transaction::source_previous_tx_hash() const {
+  // @@protoc_insertion_point(field_get:bubi.Transaction.source_previous_tx_hash)
+  return source_previous_tx_hash_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+ void Transaction::set_source_previous_tx_hash(const ::std::string& value) {
+  set_has_source_previous_tx_hash();
+  source_previous_tx_hash_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:bubi.Transaction.source_previous_tx_hash)
+}
+ void Transaction::set_source_previous_tx_hash(const char* value) {
+  set_has_source_previous_tx_hash();
+  source_previous_tx_hash_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:bubi.Transaction.source_previous_tx_hash)
+}
+ void Transaction::set_source_previous_tx_hash(const char* value, size_t size) {
+  set_has_source_previous_tx_hash();
+  source_previous_tx_hash_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
-  // @@protoc_insertion_point(field_set_pointer:bubi.Transaction.last_ledger_hash)
+  // @@protoc_insertion_point(field_set_pointer:bubi.Transaction.source_previous_tx_hash)
 }
- ::std::string* Transaction::mutable_last_ledger_hash() {
-  set_has_last_ledger_hash();
-  // @@protoc_insertion_point(field_mutable:bubi.Transaction.last_ledger_hash)
-  return last_ledger_hash_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+ ::std::string* Transaction::mutable_source_previous_tx_hash() {
+  set_has_source_previous_tx_hash();
+  // @@protoc_insertion_point(field_mutable:bubi.Transaction.source_previous_tx_hash)
+  return source_previous_tx_hash_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
- ::std::string* Transaction::release_last_ledger_hash() {
-  clear_has_last_ledger_hash();
-  return last_ledger_hash_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+ ::std::string* Transaction::release_source_previous_tx_hash() {
+  clear_has_source_previous_tx_hash();
+  return source_previous_tx_hash_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
- void Transaction::set_allocated_last_ledger_hash(::std::string* last_ledger_hash) {
-  if (last_ledger_hash != NULL) {
-    set_has_last_ledger_hash();
+ void Transaction::set_allocated_source_previous_tx_hash(::std::string* source_previous_tx_hash) {
+  if (source_previous_tx_hash != NULL) {
+    set_has_source_previous_tx_hash();
   } else {
-    clear_has_last_ledger_hash();
+    clear_has_source_previous_tx_hash();
   }
-  last_ledger_hash_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), last_ledger_hash);
-  // @@protoc_insertion_point(field_set_allocated:bubi.Transaction.last_ledger_hash)
+  source_previous_tx_hash_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), source_previous_tx_hash);
+  // @@protoc_insertion_point(field_set_allocated:bubi.Transaction.source_previous_tx_hash)
+}
+
+// required uint32 destination_previous_ledger_seq = 6;
+ bool Transaction::has_destination_previous_ledger_seq() const {
+  return (_has_bits_[0] & 0x00000020u) != 0;
+}
+ void Transaction::set_has_destination_previous_ledger_seq() {
+  _has_bits_[0] |= 0x00000020u;
+}
+ void Transaction::clear_has_destination_previous_ledger_seq() {
+  _has_bits_[0] &= ~0x00000020u;
+}
+ void Transaction::clear_destination_previous_ledger_seq() {
+  destination_previous_ledger_seq_ = 0u;
+  clear_has_destination_previous_ledger_seq();
+}
+ ::google::protobuf::uint32 Transaction::destination_previous_ledger_seq() const {
+  // @@protoc_insertion_point(field_get:bubi.Transaction.destination_previous_ledger_seq)
+  return destination_previous_ledger_seq_;
+}
+ void Transaction::set_destination_previous_ledger_seq(::google::protobuf::uint32 value) {
+  set_has_destination_previous_ledger_seq();
+  destination_previous_ledger_seq_ = value;
+  // @@protoc_insertion_point(field_set:bubi.Transaction.destination_previous_ledger_seq)
+}
+
+// required string destination_previous_tx_hash = 7;
+ bool Transaction::has_destination_previous_tx_hash() const {
+  return (_has_bits_[0] & 0x00000040u) != 0;
+}
+ void Transaction::set_has_destination_previous_tx_hash() {
+  _has_bits_[0] |= 0x00000040u;
+}
+ void Transaction::clear_has_destination_previous_tx_hash() {
+  _has_bits_[0] &= ~0x00000040u;
+}
+ void Transaction::clear_destination_previous_tx_hash() {
+  destination_previous_tx_hash_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  clear_has_destination_previous_tx_hash();
+}
+ const ::std::string& Transaction::destination_previous_tx_hash() const {
+  // @@protoc_insertion_point(field_get:bubi.Transaction.destination_previous_tx_hash)
+  return destination_previous_tx_hash_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+ void Transaction::set_destination_previous_tx_hash(const ::std::string& value) {
+  set_has_destination_previous_tx_hash();
+  destination_previous_tx_hash_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:bubi.Transaction.destination_previous_tx_hash)
+}
+ void Transaction::set_destination_previous_tx_hash(const char* value) {
+  set_has_destination_previous_tx_hash();
+  destination_previous_tx_hash_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:bubi.Transaction.destination_previous_tx_hash)
+}
+ void Transaction::set_destination_previous_tx_hash(const char* value, size_t size) {
+  set_has_destination_previous_tx_hash();
+  destination_previous_tx_hash_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:bubi.Transaction.destination_previous_tx_hash)
+}
+ ::std::string* Transaction::mutable_destination_previous_tx_hash() {
+  set_has_destination_previous_tx_hash();
+  // @@protoc_insertion_point(field_mutable:bubi.Transaction.destination_previous_tx_hash)
+  return destination_previous_tx_hash_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+ ::std::string* Transaction::release_destination_previous_tx_hash() {
+  clear_has_destination_previous_tx_hash();
+  return destination_previous_tx_hash_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+ void Transaction::set_allocated_destination_previous_tx_hash(::std::string* destination_previous_tx_hash) {
+  if (destination_previous_tx_hash != NULL) {
+    set_has_destination_previous_tx_hash();
+  } else {
+    clear_has_destination_previous_tx_hash();
+  }
+  destination_previous_tx_hash_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), destination_previous_tx_hash);
+  // @@protoc_insertion_point(field_set_allocated:bubi.Transaction.destination_previous_tx_hash)
 }
 
 #endif  // PROTOBUF_INLINE_NOT_IN_HEADERS
@@ -754,7 +1023,8 @@ void Transaction::InternalSwap(Transaction* other) {
 #ifndef _MSC_VER
 const int Account::kAccountAddressFieldNumber;
 const int Account::kAccountBalanceFieldNumber;
-const int Account::kPreviousLedgerHashFieldNumber;
+const int Account::kPreviousLedgerSeqFieldNumber;
+const int Account::kPreviousTxHashFieldNumber;
 #endif  // !_MSC_VER
 
 Account::Account()
@@ -779,7 +1049,8 @@ void Account::SharedCtor() {
   _cached_size_ = 0;
   account_address_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   account_balance_ = 0;
-  previous_ledger_hash_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  previous_ledger_seq_ = 0u;
+  previous_tx_hash_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -790,7 +1061,7 @@ Account::~Account() {
 
 void Account::SharedDtor() {
   account_address_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  previous_ledger_hash_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  previous_tx_hash_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   if (this != default_instance_) {
   }
 }
@@ -821,13 +1092,14 @@ Account* Account::New(::google::protobuf::Arena* arena) const {
 }
 
 void Account::Clear() {
-  if (_has_bits_[0 / 32] & 7) {
+  if (_has_bits_[0 / 32] & 15) {
     if (has_account_address()) {
       account_address_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
     }
     account_balance_ = 0;
-    if (has_previous_ledger_hash()) {
-      previous_ledger_hash_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    previous_ledger_seq_ = 0u;
+    if (has_previous_tx_hash()) {
+      previous_tx_hash_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
     }
   }
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
@@ -873,20 +1145,35 @@ bool Account::MergePartialFromCodedStream(
         } else {
           goto handle_unusual;
         }
-        if (input->ExpectTag(26)) goto parse_previous_ledger_hash;
+        if (input->ExpectTag(24)) goto parse_previous_ledger_seq;
         break;
       }
 
-      // required string previous_ledger_hash = 3;
+      // required uint32 previous_ledger_seq = 3;
       case 3: {
-        if (tag == 26) {
-         parse_previous_ledger_hash:
+        if (tag == 24) {
+         parse_previous_ledger_seq:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_UINT32>(
+                 input, &previous_ledger_seq_)));
+          set_has_previous_ledger_seq();
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(34)) goto parse_previous_tx_hash;
+        break;
+      }
+
+      // required string previous_tx_hash = 4;
+      case 4: {
+        if (tag == 34) {
+         parse_previous_tx_hash:
           DO_(::google::protobuf::internal::WireFormatLite::ReadString(
-                input, this->mutable_previous_ledger_hash()));
+                input, this->mutable_previous_tx_hash()));
           ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
-            this->previous_ledger_hash().data(), this->previous_ledger_hash().length(),
+            this->previous_tx_hash().data(), this->previous_tx_hash().length(),
             ::google::protobuf::internal::WireFormat::PARSE,
-            "bubi.Account.previous_ledger_hash");
+            "bubi.Account.previous_tx_hash");
         } else {
           goto handle_unusual;
         }
@@ -934,14 +1221,19 @@ void Account::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::WriteDouble(2, this->account_balance(), output);
   }
 
-  // required string previous_ledger_hash = 3;
-  if (has_previous_ledger_hash()) {
+  // required uint32 previous_ledger_seq = 3;
+  if (has_previous_ledger_seq()) {
+    ::google::protobuf::internal::WireFormatLite::WriteUInt32(3, this->previous_ledger_seq(), output);
+  }
+
+  // required string previous_tx_hash = 4;
+  if (has_previous_tx_hash()) {
     ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
-      this->previous_ledger_hash().data(), this->previous_ledger_hash().length(),
+      this->previous_tx_hash().data(), this->previous_tx_hash().length(),
       ::google::protobuf::internal::WireFormat::SERIALIZE,
-      "bubi.Account.previous_ledger_hash");
+      "bubi.Account.previous_tx_hash");
     ::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
-      3, this->previous_ledger_hash(), output);
+      4, this->previous_tx_hash(), output);
   }
 
   if (_internal_metadata_.have_unknown_fields()) {
@@ -970,15 +1262,20 @@ void Account::SerializeWithCachedSizes(
     target = ::google::protobuf::internal::WireFormatLite::WriteDoubleToArray(2, this->account_balance(), target);
   }
 
-  // required string previous_ledger_hash = 3;
-  if (has_previous_ledger_hash()) {
+  // required uint32 previous_ledger_seq = 3;
+  if (has_previous_ledger_seq()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(3, this->previous_ledger_seq(), target);
+  }
+
+  // required string previous_tx_hash = 4;
+  if (has_previous_tx_hash()) {
     ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
-      this->previous_ledger_hash().data(), this->previous_ledger_hash().length(),
+      this->previous_tx_hash().data(), this->previous_tx_hash().length(),
       ::google::protobuf::internal::WireFormat::SERIALIZE,
-      "bubi.Account.previous_ledger_hash");
+      "bubi.Account.previous_tx_hash");
     target =
       ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
-        3, this->previous_ledger_hash(), target);
+        4, this->previous_tx_hash(), target);
   }
 
   if (_internal_metadata_.have_unknown_fields()) {
@@ -1004,11 +1301,18 @@ int Account::RequiredFieldsByteSizeFallback() const {
     total_size += 1 + 8;
   }
 
-  if (has_previous_ledger_hash()) {
-    // required string previous_ledger_hash = 3;
+  if (has_previous_ledger_seq()) {
+    // required uint32 previous_ledger_seq = 3;
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::UInt32Size(
+        this->previous_ledger_seq());
+  }
+
+  if (has_previous_tx_hash()) {
+    // required string previous_tx_hash = 4;
     total_size += 1 +
       ::google::protobuf::internal::WireFormatLite::StringSize(
-        this->previous_ledger_hash());
+        this->previous_tx_hash());
   }
 
   return total_size;
@@ -1016,7 +1320,7 @@ int Account::RequiredFieldsByteSizeFallback() const {
 int Account::ByteSize() const {
   int total_size = 0;
 
-  if (((_has_bits_[0] & 0x00000007) ^ 0x00000007) == 0) {  // All required fields are present.
+  if (((_has_bits_[0] & 0x0000000f) ^ 0x0000000f) == 0) {  // All required fields are present.
     // required string account_address = 1;
     total_size += 1 +
       ::google::protobuf::internal::WireFormatLite::StringSize(
@@ -1025,10 +1329,15 @@ int Account::ByteSize() const {
     // required double account_balance = 2;
     total_size += 1 + 8;
 
-    // required string previous_ledger_hash = 3;
+    // required uint32 previous_ledger_seq = 3;
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::UInt32Size(
+        this->previous_ledger_seq());
+
+    // required string previous_tx_hash = 4;
     total_size += 1 +
       ::google::protobuf::internal::WireFormatLite::StringSize(
-        this->previous_ledger_hash());
+        this->previous_tx_hash());
 
   } else {
     total_size += RequiredFieldsByteSizeFallback();
@@ -1066,9 +1375,12 @@ void Account::MergeFrom(const Account& from) {
     if (from.has_account_balance()) {
       set_account_balance(from.account_balance());
     }
-    if (from.has_previous_ledger_hash()) {
-      set_has_previous_ledger_hash();
-      previous_ledger_hash_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.previous_ledger_hash_);
+    if (from.has_previous_ledger_seq()) {
+      set_previous_ledger_seq(from.previous_ledger_seq());
+    }
+    if (from.has_previous_tx_hash()) {
+      set_has_previous_tx_hash();
+      previous_tx_hash_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.previous_tx_hash_);
     }
   }
   if (from._internal_metadata_.have_unknown_fields()) {
@@ -1089,7 +1401,7 @@ void Account::CopyFrom(const Account& from) {
 }
 
 bool Account::IsInitialized() const {
-  if ((_has_bits_[0] & 0x00000007) != 0x00000007) return false;
+  if ((_has_bits_[0] & 0x0000000f) != 0x0000000f) return false;
 
   return true;
 }
@@ -1101,7 +1413,8 @@ void Account::Swap(Account* other) {
 void Account::InternalSwap(Account* other) {
   account_address_.Swap(&other->account_address_);
   std::swap(account_balance_, other->account_balance_);
-  previous_ledger_hash_.Swap(&other->previous_ledger_hash_);
+  std::swap(previous_ledger_seq_, other->previous_ledger_seq_);
+  previous_tx_hash_.Swap(&other->previous_tx_hash_);
   std::swap(_has_bits_[0], other->_has_bits_[0]);
   _internal_metadata_.Swap(&other->_internal_metadata_);
   std::swap(_cached_size_, other->_cached_size_);
@@ -1195,57 +1508,81 @@ void Account::InternalSwap(Account* other) {
   // @@protoc_insertion_point(field_set:bubi.Account.account_balance)
 }
 
-// required string previous_ledger_hash = 3;
- bool Account::has_previous_ledger_hash() const {
+// required uint32 previous_ledger_seq = 3;
+ bool Account::has_previous_ledger_seq() const {
   return (_has_bits_[0] & 0x00000004u) != 0;
 }
- void Account::set_has_previous_ledger_hash() {
+ void Account::set_has_previous_ledger_seq() {
   _has_bits_[0] |= 0x00000004u;
 }
- void Account::clear_has_previous_ledger_hash() {
+ void Account::clear_has_previous_ledger_seq() {
   _has_bits_[0] &= ~0x00000004u;
 }
- void Account::clear_previous_ledger_hash() {
-  previous_ledger_hash_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  clear_has_previous_ledger_hash();
+ void Account::clear_previous_ledger_seq() {
+  previous_ledger_seq_ = 0u;
+  clear_has_previous_ledger_seq();
 }
- const ::std::string& Account::previous_ledger_hash() const {
-  // @@protoc_insertion_point(field_get:bubi.Account.previous_ledger_hash)
-  return previous_ledger_hash_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+ ::google::protobuf::uint32 Account::previous_ledger_seq() const {
+  // @@protoc_insertion_point(field_get:bubi.Account.previous_ledger_seq)
+  return previous_ledger_seq_;
 }
- void Account::set_previous_ledger_hash(const ::std::string& value) {
-  set_has_previous_ledger_hash();
-  previous_ledger_hash_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
-  // @@protoc_insertion_point(field_set:bubi.Account.previous_ledger_hash)
+ void Account::set_previous_ledger_seq(::google::protobuf::uint32 value) {
+  set_has_previous_ledger_seq();
+  previous_ledger_seq_ = value;
+  // @@protoc_insertion_point(field_set:bubi.Account.previous_ledger_seq)
 }
- void Account::set_previous_ledger_hash(const char* value) {
-  set_has_previous_ledger_hash();
-  previous_ledger_hash_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
-  // @@protoc_insertion_point(field_set_char:bubi.Account.previous_ledger_hash)
+
+// required string previous_tx_hash = 4;
+ bool Account::has_previous_tx_hash() const {
+  return (_has_bits_[0] & 0x00000008u) != 0;
 }
- void Account::set_previous_ledger_hash(const char* value, size_t size) {
-  set_has_previous_ledger_hash();
-  previous_ledger_hash_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+ void Account::set_has_previous_tx_hash() {
+  _has_bits_[0] |= 0x00000008u;
+}
+ void Account::clear_has_previous_tx_hash() {
+  _has_bits_[0] &= ~0x00000008u;
+}
+ void Account::clear_previous_tx_hash() {
+  previous_tx_hash_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  clear_has_previous_tx_hash();
+}
+ const ::std::string& Account::previous_tx_hash() const {
+  // @@protoc_insertion_point(field_get:bubi.Account.previous_tx_hash)
+  return previous_tx_hash_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+ void Account::set_previous_tx_hash(const ::std::string& value) {
+  set_has_previous_tx_hash();
+  previous_tx_hash_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:bubi.Account.previous_tx_hash)
+}
+ void Account::set_previous_tx_hash(const char* value) {
+  set_has_previous_tx_hash();
+  previous_tx_hash_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:bubi.Account.previous_tx_hash)
+}
+ void Account::set_previous_tx_hash(const char* value, size_t size) {
+  set_has_previous_tx_hash();
+  previous_tx_hash_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
-  // @@protoc_insertion_point(field_set_pointer:bubi.Account.previous_ledger_hash)
+  // @@protoc_insertion_point(field_set_pointer:bubi.Account.previous_tx_hash)
 }
- ::std::string* Account::mutable_previous_ledger_hash() {
-  set_has_previous_ledger_hash();
-  // @@protoc_insertion_point(field_mutable:bubi.Account.previous_ledger_hash)
-  return previous_ledger_hash_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+ ::std::string* Account::mutable_previous_tx_hash() {
+  set_has_previous_tx_hash();
+  // @@protoc_insertion_point(field_mutable:bubi.Account.previous_tx_hash)
+  return previous_tx_hash_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
- ::std::string* Account::release_previous_ledger_hash() {
-  clear_has_previous_ledger_hash();
-  return previous_ledger_hash_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+ ::std::string* Account::release_previous_tx_hash() {
+  clear_has_previous_tx_hash();
+  return previous_tx_hash_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
- void Account::set_allocated_previous_ledger_hash(::std::string* previous_ledger_hash) {
-  if (previous_ledger_hash != NULL) {
-    set_has_previous_ledger_hash();
+ void Account::set_allocated_previous_tx_hash(::std::string* previous_tx_hash) {
+  if (previous_tx_hash != NULL) {
+    set_has_previous_tx_hash();
   } else {
-    clear_has_previous_ledger_hash();
+    clear_has_previous_tx_hash();
   }
-  previous_ledger_hash_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), previous_ledger_hash);
-  // @@protoc_insertion_point(field_set_allocated:bubi.Account.previous_ledger_hash)
+  previous_tx_hash_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), previous_tx_hash);
+  // @@protoc_insertion_point(field_set_allocated:bubi.Account.previous_tx_hash)
 }
 
 #endif  // PROTOBUF_INLINE_NOT_IN_HEADERS

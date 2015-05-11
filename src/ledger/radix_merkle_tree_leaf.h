@@ -19,6 +19,7 @@ public:
 	}
 	std::vector <char>& peek_data ();
 	Serializer&	peek_serializer ();
+	std::string peek_string ();
 	void data_to_string ();
 
 private:

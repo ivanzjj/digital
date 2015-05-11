@@ -1,4 +1,4 @@
-noinst_PROGRAMS = main bubi_server
+noinst_PROGRAMS = bubi_server
 
 main_SOURCES = main.cpp
 main_CXXFLAGS = -std=c++11	\

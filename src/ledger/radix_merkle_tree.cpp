@@ -216,6 +216,29 @@ RadixMerkleTree::walk_to_leaf (uint256& hash){
 	return (now->peek_leaf()->get_index() == hash ? now.get () : NULL);
 }
 
+Account::pointer
+RadixMerkleTree::get_account_entry (uint256& hash){
+	RadixMerkleTreeNode::pointer now = root_;
+	int depth = 0, branch;
+	Account::pointer ret = nullptr;
+
+	while (now->is_inner ()){
+		branch = select_branch (hash, depth);
+		if (now->is_empty_branch (branch)){
+			return ret;
+		}
+		now = descend (now, branch);
+		depth++;
+	}
+	if (now->peek_leaf ()->get_index () != hash){
+		return ret;
+	}
+	ret = std::make_shared<Account> ();
+	std::string str = now->peek_leaf ()->peek_string ();
+	ret->unserializer (str);
+	return ret;
+}
+
 // this smart pointer is the same to NULL in pointer
 static const RadixMerkleTreeLeaf::pointer no_item;
 

@@ -100,8 +100,63 @@ Ledger::update_transaction_tree_hash (){
 	update_ledger_hash ();
 }
 
+
+bool
+Ledger::add_transaction_entry (uint256& hash, Transaction::pointer tx){
+	uint256& source_address = tx->get_source_address ();
+	uint256& destination_address = tx->get_destination_address ();
+	double	 amount = tx->get_payment_amount ();
+
+	Account::pointer source_account = get_account_entry (source_address);
+	Account::pointer destination_account = get_account_entry (destination_address);
+	
+	source_account->add_balance (-amount);
+	destination_account->add_balance (amount);
+
+	std::uint32_t source_previous_ledger_seq = source_account->get_previous_ledger_seq ();
+	std::uint32_t destination_previous_ledger_seq = destination_account->get_previous_ledger_seq ();
+
+	uint256& source_tx_hash = source_account->get_previous_tx_hash ();
+	uint256& destination_tx_hash = destination_account->get_previous_tx_hash ();
+
+	
+	tx->set_source_previous_ledger_seq (source_previous_ledger_seq);
+	tx->set_source_previous_tx_hash (source_tx_hash);
+	tx->set_destination_previous_ledger_seq (destination_previous_ledger_seq);
+	tx->set_destination_previous_tx_hash (destination_tx_hash);
+
+	Serializer s (tx->serializer ());
+	RadixMerkleTreeLeaf::pointer item = std::make_shared<RadixMerkleTreeLeaf> (hash, s);
+	transaction_tree_->add_item (item, true);
+	update_transaction_tree_hash ();
+
+
+	source_account->set_previous_ledger_seq (ledger_sequence_);
+	source_account->set_previous_tx_hash (hash);
+
+	destination_account->set_previous_ledger_seq (ledger_sequence_);
+	destination_account->set_previous_tx_hash (hash);
+
+	Serializer ss (source_account->serializer ());
+	Serializer ds (destination_account->serializer ());
+	RadixMerkleTreeLeaf::pointer s_item = std::make_shared<RadixMerkleTreeLeaf> (source_account->get_account_address (), ss);
+
+	RadixMerkleTreeLeaf::pointer d_item = std::make_shared<RadixMerkleTreeLeaf> (destination_account->get_account_address (), ds);
+
+	update_account_tree_entry (s_item);
+	update_account_tree_entry (d_item);
+	update_account_tree_hash ();
+	return true;
+}
+
+Account::pointer
+Ledger::get_account_entry (uint256& hash){
+	return	account_tree_->get_account_entry (hash); 
+}
+
 bool 
-Ledger::add_account_tree_entry (uint256 &tag, Serializer &s){
+Ledger::add_account_tree_entry (uint256 &tag, Account::pointer acc){
+	Serializer s (acc->serializer ());
 	RadixMerkleTreeLeaf::pointer item = std::make_shared <RadixMerkleTreeLeaf> (tag, s);
 //	RadixMerkleTreeLeaf item (tag, s);
 	account_tree_->add_item (item, false);

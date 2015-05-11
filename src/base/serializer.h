@@ -3,6 +3,8 @@
 
 #include <vector>
 #include <memory>
+#include <string>
+
 #include "utils.h"
 
 namespace Bubi{
@@ -11,6 +13,10 @@ class Serializer{
 public:
 	typedef std::shared_ptr <Serializer> pointer;
 	
+	Serializer (){}
+	~Serializer (){}
+	Serializer (std::string str);
+
 	std::vector <char>& peek_data ();
 	static uint256 get_prefix_hash (const char *ch, int len);
 	bool add_raw (const char* ch, int len);
