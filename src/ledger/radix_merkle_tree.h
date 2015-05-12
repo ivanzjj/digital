@@ -11,6 +11,7 @@
 #include "database.h"
 #include "rocksdb_imp.h"
 #include "account.h"
+#include "transaction.h"
 
 namespace Bubi{
 
@@ -37,7 +38,7 @@ public:
 	bool 							add_item (RadixMerkleTreeLeaf::pointer item, bool is_transaction);
 	bool 							add_given_item (RadixMerkleTreeLeaf::pointer item, bool is_transaction);
 	RadixMerkleTreeLeafStack 		get_stack (uint256& hash);
-	int 							select_branch (uint256 &hash, int tree_depth);
+	int 							select_branch (uint256 &hash, unsigned int tree_depth);
 	RadixMerkleTreeNode::pointer 	fetch_node_from_db (uint256& hash);
 	void							store_node (RadixMerkleTreeNode::pointer node);
 	RadixMerkleTreeNode::pointer	descend (RadixMerkleTreeNode::ref parent, int branch);
@@ -56,6 +57,7 @@ public:
 	void	backup_to_database ();
 	uint256	get_hash ();
 	Account::pointer	get_account_entry (uint256& hash);
+	Transaction::pointer	get_transaction_entry (uint256& hash);
 	
 private:
 	

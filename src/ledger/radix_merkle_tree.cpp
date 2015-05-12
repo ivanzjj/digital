@@ -53,13 +53,6 @@ RadixMerkleTree::fetch_node_from_db (uint256 &hash){
 
 	RadixMerkleTreeNode::pointer ret;
 	ret = radix_merkle_tree_db_->fetch (hash);
-
-#if 0
-	std::cout << "*********************************" << std::endl;
-	std::cout << ret->get_hash ().to_string () << std::endl;
-#endif
-
-
 	return ret;
 }
 void
@@ -101,13 +94,13 @@ RadixMerkleTree::get_stack (uint256 & hash){
 }
 
 int 
-RadixMerkleTree::select_branch (uint256 &hash, int tree_depth){
-	int byte_branch = *(hash.begin() + (tree_depth >> 1));
+RadixMerkleTree::select_branch (uint256 &hash, unsigned int tree_depth){
+	unsigned int byte_branch = *(unsigned char *)(hash.begin() + (tree_depth >> 1));
 	if (tree_depth & 1){
-		return (byte_branch & 0xF);
+		return (int) (byte_branch & 0xF);
 	}
 	else{
-		return (byte_branch >> 4);
+		return (int)(byte_branch >> 4);
 	}
 }
 
@@ -234,6 +227,27 @@ RadixMerkleTree::get_account_entry (uint256& hash){
 		return ret;
 	}
 	ret = std::make_shared<Account> ();
+	std::string str = now->peek_leaf ()->peek_string ();
+	ret->unserializer (str);
+	return ret;
+}
+
+Transaction::pointer
+RadixMerkleTree::get_transaction_entry (uint256& hash){
+	RadixMerkleTreeNode::pointer now = root_;
+	int depth = 0, branch;
+	Transaction::pointer ret = nullptr;
+
+	while (now->is_inner ()){
+		branch = select_branch (hash, depth);
+		if (now->is_empty_branch (branch))
+			return ret;
+		now = descend (now, branch);
+		depth++;
+	}
+	if (now->peek_leaf ()->get_index () != hash)
+		return ret;
+	ret = std::make_shared <Transaction> ();
 	std::string str = now->peek_leaf ()->peek_string ();
 	ret->unserializer (str);
 	return ret;

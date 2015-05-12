@@ -24,7 +24,7 @@ Ledger::Ledger (){
 	hash_.zero ();
 	parent_hash_.zero ();
 	total_coins_ = 0;
-	ledger_sequence_ = 0;
+	ledger_sequence_ = 1;
 	close_time_ = 0;
 	transaction_tree_ = std::make_shared <RadixMerkleTree> (true);
 	account_tree_ = std::make_shared <RadixMerkleTree> (false);
@@ -102,7 +102,8 @@ Ledger::update_transaction_tree_hash (){
 
 
 bool
-Ledger::add_transaction_entry (uint256& hash, Transaction::pointer tx){
+Ledger::add_transaction_entry (Transaction::pointer tx){
+
 	uint256& source_address = tx->get_source_address ();
 	uint256& destination_address = tx->get_destination_address ();
 	double	 amount = tx->get_payment_amount ();
@@ -119,6 +120,10 @@ Ledger::add_transaction_entry (uint256& hash, Transaction::pointer tx){
 	uint256& source_tx_hash = source_account->get_previous_tx_hash ();
 	uint256& destination_tx_hash = destination_account->get_previous_tx_hash ();
 
+	std::cout << source_previous_ledger_seq << std::endl;
+	std::cout << destination_previous_ledger_seq << std::endl;
+	std::cout << source_tx_hash.to_string () << std::endl;
+	std::cout << destination_tx_hash.to_string () << std::endl;
 	
 	tx->set_source_previous_ledger_seq (source_previous_ledger_seq);
 	tx->set_source_previous_tx_hash (source_tx_hash);
@@ -126,6 +131,7 @@ Ledger::add_transaction_entry (uint256& hash, Transaction::pointer tx){
 	tx->set_destination_previous_tx_hash (destination_tx_hash);
 
 	Serializer s (tx->serializer ());
+	uint256 hash = s.get_sha512_half ();
 	RadixMerkleTreeLeaf::pointer item = std::make_shared<RadixMerkleTreeLeaf> (hash, s);
 	transaction_tree_->add_item (item, true);
 	update_transaction_tree_hash ();
@@ -152,6 +158,11 @@ Ledger::add_transaction_entry (uint256& hash, Transaction::pointer tx){
 Account::pointer
 Ledger::get_account_entry (uint256& hash){
 	return	account_tree_->get_account_entry (hash); 
+}
+
+Transaction::pointer
+Ledger::get_transaction_entry (uint256& hash){
+	return transaction_tree_->get_transaction_entry (hash); 
 }
 
 bool 

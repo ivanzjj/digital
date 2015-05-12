@@ -37,7 +37,7 @@ RadixMerkleTreeLeaf::data_to_string (){
 	std::vector <char>& data = peek_data ();
 	int sz = data.size ();
 	for (int i = 0; i < sz; i++){
-		printf ("%2x ", data[i]);
+		printf ("%02x ", (int)(unsigned char)(data[i]));
 	}
 	printf ("\n");
 }

@@ -23,6 +23,9 @@ public:
 	
 	RadixMerkleTreeNode (RadixMerkleTreeLeaf::pointer item,TreeNodeType node_type)
 	:item_(item), type_(node_type){
+		branch_mask_ = 0;
+		is_transaction_tree_ = (type_ == TREE_NODE_TYPE_TRANSACTION_LEAF) ? true : false;
+		update_hash ();
 		hash_ = item_->get_index ();
 	}
 	RadixMerkleTreeNode (bool is_transaction_tree = false);

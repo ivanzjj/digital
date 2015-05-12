@@ -49,7 +49,7 @@ public:
 	std::string to_string (){
 		char res[1000];
 		for (int i = 0; i < WIDTH; i++){
-			sprintf (res + (i << 1), "%02x", data[i]);
+			sprintf (res + (i << 1), "%02x", (int)(unsigned char)(data[i]));
 		}
 		*(res + (WIDTH << 1)) = 0;
 		return res;
@@ -67,7 +67,7 @@ inline bool operator == (base_uint<Bits> &a, base_uint<Bits> &b){
 	}
 	int bytes = a.get_bytes ();
 	for (int i = 0; i < bytes; i++){
-		if (*(a.begin() + i) != *(b.begin() + i)){
+		if ((*(char *)(a.begin() + i)) != (*(char *)(b.begin() + i))){
 			return false;
 		}
 	}
