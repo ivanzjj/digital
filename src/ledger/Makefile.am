@@ -2,7 +2,7 @@ PROTOBUF := $(top_builddir)/src/protobuf/src/.libs/libprotobuf.so
 PROTOBUF_PATH := $(top_builddir)/src/protobuf
 
 $(PROTOBUF) :
-	@echo "*************building protobuf now***************" && cd $(PROTOBUF_PATH) && $(MAKE) && $(MAKE) install
+	@echo "*************building protobuf now***************" && cd $(PROTOBUF_PATH) && ./autogen.sh && ./configure --prefix=/usr && $(MAKE) && $(MAKE) install
 
 lib_LTLIBRARIES = libbubi_ledger.la
 
