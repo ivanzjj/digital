@@ -7,6 +7,7 @@
 #include <vector>
 #include <signal.h>
 #include <sys/time.h>
+#include <thread>
 
 #include <sqlite3.h>
 #include "sqlite_imp.h"
@@ -16,6 +17,7 @@
 #include "account.h"
 #include "net.h"
 #include "netbase.h"
+#include "interface.h"
 
 using namespace Bubi;
 
@@ -23,7 +25,7 @@ std::string ledger_db_name = "/home/ivanzjj/bubi_ledger.db";
 std::string radix_db_name = "/home/ivanzjj/radix_tree";
 
 SqliteImp::pointer ledger_db;
-Ledger::pointer	last_ledger = nullptr;
+Ledger::pointer	Bubi::last_ledger = nullptr;
 
 int create_if_not_exist (){
 	std::string sql = "";
@@ -64,7 +66,7 @@ int load_last_ledger_call_back (void *data, int argc, char **argv, char **azColN
 	account_tree_hash.binary_init (argv[4]);
 	char_to_uint32_t (total_coin, argv[5]);
 	char_to_uint32_t (close_time, argv[6]);
-	last_ledger = std::make_shared<Ledger> (hash, parent_hash, transaction_tree_hash, account_tree_hash, total_coin, ledger_sequence, close_time);	
+	Bubi::last_ledger = std::make_shared<Ledger> (hash, parent_hash, transaction_tree_hash, account_tree_hash, total_coin, ledger_sequence, close_time);	
 	return 0;
 }
 
@@ -78,9 +80,9 @@ int load_last_ledger (){
 		BUBI_LOG ("load last ledger failed");
 		return 1;
 	}
-	if (!last_ledger){
+	if (!Bubi::last_ledger){
 		BUBI_LOG ("there is no ledger exist,then create a init ledger");
-		last_ledger = std::make_shared<Ledger> ();
+		Bubi::last_ledger = std::make_shared<Ledger> ();
 	}
 	else {
 		BUBI_LOG ("load ledger success");
@@ -107,7 +109,7 @@ int test (){
 
 	Account::pointer acc = std::make_shared<Account> (hash, 10, 0, p_tx);
 
-	last_ledger->add_account_tree_entry (hash, acc);
+	Bubi::last_ledger->add_account_tree_entry (hash, acc);
 	
 	for (int i = 0; i < 32; ++i){
 		hash_ch[i] = i;
@@ -116,21 +118,21 @@ int test (){
 	hash.init (hash_ch);
 
 	acc = std::make_shared <Account> (hash, 20, 0, p_tx);
-	last_ledger->add_account_tree_entry (hash, acc);
+	Bubi::last_ledger->add_account_tree_entry (hash, acc);
 
 	for (int i = 0; i < 32; i++)	hash_ch[i] = i;
 	hash_ch[0] = 1; hash_ch[1] = 2;
 	hash.init (hash_ch);
 
 	acc = std::make_shared <Account> (hash, 30, 0, p_tx);
-	last_ledger->add_account_tree_entry (hash, acc);
+	Bubi::last_ledger->add_account_tree_entry (hash, acc);
 	
 	for (int i = 0; i < 32; i++)	hash_ch[i] = i;
 	hash.init (hash_ch);
 
-	if (last_ledger->has_account (hash)){
+	if (Bubi::last_ledger->has_account (hash)){
 		printf ("YES\n");
-		acc = last_ledger->get_account_entry (hash);
+		acc = Bubi::last_ledger->get_account_entry (hash);
 		std::cout << acc->get_account_address ().to_string () << std::endl;
 		std::cout << acc->get_account_balance () << std::endl;
 		std::cout << acc->get_previous_ledger_seq () << std::endl;
@@ -140,7 +142,7 @@ int test (){
 		Serializer ss (acc->serializer ());
 
 		RadixMerkleTreeLeaf::pointer new_item = std::make_shared <RadixMerkleTreeLeaf> (hash, ss);
-		last_ledger->update_account_tree_entry (new_item);
+		Bubi::last_ledger->update_account_tree_entry (new_item);
 	}
 }
 
@@ -174,7 +176,7 @@ void dfs (RadixMerkleTreeNode::pointer node, int tree_depth){
 }
 
 void fetch_from_db (){
-	RadixMerkleTree::pointer tree = last_ledger->get_account_tree ();
+	RadixMerkleTree::pointer tree = Bubi::last_ledger->get_account_tree ();
 	RadixMerkleTreeNode::pointer now, tmp;
 
 	std::queue <RadixMerkleTreeNode::pointer> que;
@@ -192,7 +194,7 @@ void fetch_from_db (){
 		}
 	}
 	
-	tree = last_ledger->get_transaction_tree ();
+	tree = Bubi::last_ledger->get_transaction_tree ();
 	while (!que.empty())	que.pop();
 	now = tree->get_root ();
 	que.push (now);
@@ -215,7 +217,7 @@ int create_transaction (std::string source_addr, std::string det_addr, double am
 	Serializer ds (det_addr);
 	uint256 det = ds.get_sha512_half ();
 	Transaction::pointer tx = std::make_shared <Transaction> (source, det, amount);
-	return last_ledger->add_transaction_entry (tx);
+	return Bubi::last_ledger->add_transaction_entry (tx);
 }
 
 
@@ -230,19 +232,19 @@ int create_account (std::string acc_pub){
 	uint256 p_tx;
 	p_tx.zero ();
 	Account::pointer acc = std::make_shared <Account> (hash, 1000, 0, p_tx);
-	last_ledger->add_account_tree_entry (hash, acc);
+	Bubi::last_ledger->add_account_tree_entry (hash, acc);
 	return 0;
 }
 
 double get_balance (std::string acc_pub){
 	uint256 hash = string_address_to_uint256 (acc_pub);
-	Account::pointer acc = last_ledger->get_account_entry (hash);
+	Account::pointer acc = Bubi::last_ledger->get_account_entry (hash);
 	return acc->get_account_balance ();
 }
 
 std::vector <Transaction::pointer>	get_transaction_history (std::string acc_pub){
 	uint256 hash = string_address_to_uint256 (acc_pub);
-	Account::pointer acc = last_ledger->get_account_entry (hash);
+	Account::pointer acc = Bubi::last_ledger->get_account_entry (hash);
 	std::vector <Transaction::pointer> res;
 
 	uint256 tx_hash;
@@ -253,7 +255,7 @@ std::vector <Transaction::pointer>	get_transaction_history (std::string acc_pub)
 
 
 	while ( tx_seq != 0 ){
-		Transaction::pointer tx = last_ledger->get_transaction_entry (tx_hash);
+		Transaction::pointer tx = Bubi::last_ledger->get_transaction_entry (tx_hash);
 		res.push_back (tx);
 /*
 		std::cout << "------------------------------------" << std::endl;
@@ -304,7 +306,7 @@ void find_transaction_history (){
 	hash.init (hash_ch);
 
 //	vector <Transaction::pointer> vet;
-	Account::pointer acc = last_ledger->get_account_entry (hash);
+	Account::pointer acc = Bubi::last_ledger->get_account_entry (hash);
 
 	uint256 tx_hash;
 	std::uint32_t	tx_seq;
@@ -314,7 +316,7 @@ void find_transaction_history (){
 
 
 	while ( tx_seq != 0 ){
-		Transaction::pointer tx = last_ledger->get_transaction_entry (tx_hash);
+		Transaction::pointer tx = Bubi::last_ledger->get_transaction_entry (tx_hash);
 		std::cout << "------------------------------------" << std::endl;
 		std::cout << tx->get_source_address ().to_string () << std::endl;
 		std::cout << tx->get_destination_address ().to_string () << std::endl;
@@ -334,7 +336,7 @@ void find_transaction_history (){
 
 
 void auto_print_account_balance (int sig){
-	dfs (last_ledger->get_account_tree ()->get_root (), 0);
+	dfs (Bubi::last_ledger->get_account_tree ()->get_root (), 0);
 }
 
 int setup_timer (){

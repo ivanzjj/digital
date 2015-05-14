@@ -5,7 +5,8 @@
 #include <ifaddrs.h>
 #include <sstream>
 #include "net.h"
-
+#include "interface.h"
+using namespace Bubi;
 std::vector<BNode *> vNodes;
 std::mutex mu_vNodes;
 std::vector<struct in_addr> vAddrToSend;
@@ -243,11 +244,11 @@ std::string ParseHandleJsonData(const std::string data) {
                 std::string recvAddr = root["params"]["receive_addr"].asString();
                 //todo: use variables above to generate transactions
                 //todo: put transaction into ledger
-				stringstream ss;
+				std::stringstream ss;
 				ss << fee;
 				double amount;
 				ss >> amount;
-                if (!create_transaction(sendAddr, recvaddr, amount)) {
+                if (!create_transaction(sendAddr, recvAddr, amount)) {
 
 					output["errCode"] = "1";
 					output["msg"] = "success";
@@ -257,7 +258,7 @@ std::string ParseHandleJsonData(const std::string data) {
 					output["msg"] = "fail";
 				}
 				time_t tm = time(NULL);
-				stringstream kk;
+				std::stringstream kk;
 				kk << tm;
 				std::string transid;
 				kk >> transid;
