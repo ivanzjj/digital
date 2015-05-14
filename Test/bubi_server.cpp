@@ -207,7 +207,11 @@ void fetch_from_db (){
 
 }
 
-int create_transaction (uint256& source, uint256& det, double amount){
+int create_transaction (std::string source_addr, std::string det_addr, double amount){
+	Serializer ss (source_addr);
+	uint256 source = ss.get_sha512_half ();
+	Serializer ds (det_addr);
+	uint256 det = ds.get_sha512_half ();
 	Transaction::pointer tx = std::make_shared <Transaction> (source, det, amount);
 	return last_ledger->add_transaction_entry (tx);
 }
@@ -278,13 +282,15 @@ void create_transaction2 (){
 	for (int i = 0; i < 32; i++)	hash_ch[i] = i;
 	hash_ch[0] = 1; hash_ch[1] = 2;
 	destination.init (hash_ch);
-	
+
+/*
 	if (create_transaction (source, destination, 200)){
 		printf ("transaction has failed!\n");
 	}
 	else {
 		printf ("transaction is ok\n");
 	}
+*/
 }
 
 
