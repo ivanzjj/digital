@@ -371,12 +371,12 @@ int main (){
 	
 //	test ();	
 //	dfs (last_ledger->get_transaction_tree ()->get_root (), 0);
-	dfs (last_ledger->get_account_tree ()->get_root (), 0);
+//	dfs (last_ledger->get_account_tree ()->get_root (), 0);
 //	create_transaction2 ();
 //	std::cout << "**************After the transaction added to the ledger*******************" << std::endl;
 //	dfs (last_ledger->get_account_tree ()->get_root (), 0);
 //	dfs (last_ledger->get_transaction_tree ()->get_root (), 0);
-	find_transaction_history ();
+//	find_transaction_history ();
 
 //	transaction_serializer_test ();	
 //	account_serializer_test ();
