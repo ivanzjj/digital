@@ -8,4 +8,4 @@
 #test_SOURCES = test.cpp
 #test_LDADD = $(ROCKSDB)
 
-SUBDIRS = base database ledger
+SUBDIRS = base database ledger p2p

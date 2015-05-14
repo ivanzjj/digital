@@ -1,0 +1,13 @@
+package protocol;
+
+message bubiMsgHeader {
+    required string command = 1;
+    required uint32 msgSize = 2;
+    optional uint32 checkSum = 3;
+}
+
+message bubiMsg {
+
+    required bubiMsgHeader header = 1;
+    required string        data   = 2;
+}

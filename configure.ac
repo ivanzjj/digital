@@ -34,6 +34,7 @@ AC_CONFIG_FILES([Makefile
 		src/database/Makefile
 		src/ledger/Makefile
 		src/base/Makefile
+		src/p2p/Makefile
 		Test/Makefile
 		])
 
