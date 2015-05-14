@@ -356,7 +356,13 @@ int setup_timer (){
 	}
 }
 
+void shut_down_call_back (int sig){
+	BUBI_LOG ("shut down the system......");
+	exit (0);
+}
+
 int init (){
+	signal (SIGINT, shut_down_call_back);
 	RocksdbInstance::set_db_name (radix_db_name);
 	SqliteInstance::set_db_name (ledger_db_name);
 	if (recover_ledger ()){
@@ -371,6 +377,12 @@ int main (){
 	if (init ()){
 		printf ("init error!\n");
 		return 1;
+	}
+
+	Discover();
+	for (auto &addr : hostAddr) {
+		BService bService(addr, ntohs(30000));
+		BindListenPort(bService);
 	}
     std::thread thread1(&ThreadSocketHandler);
 	std::thread thread2(&ThreadOpenConnections);

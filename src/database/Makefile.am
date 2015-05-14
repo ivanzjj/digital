@@ -7,7 +7,7 @@ SQLITEDB := $(top_builddir)/src/sqlite/.libs/libsqlite3.so
 SQLITEDB_BUILD_PATH := $(top_builddir)/src/sqlite
 
 $(SQLITEDB):
-	@echo ******************Building sqlitedb now************* && cd $(SQLITEDB_BUILD_PATH) && $(MAKE) && $(MAKE) install
+	@echo ******************Building sqlitedb now************* && cd $(SQLITEDB_BUILD_PATH) && ./configure --prefix=/usr && $(MAKE) && $(MAKE) install
 
 
 lib_LTLIBRARIES = libbubi_database.la
