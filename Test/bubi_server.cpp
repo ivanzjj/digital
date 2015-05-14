@@ -21,8 +21,8 @@
 
 using namespace Bubi;
 
-std::string ledger_db_name = "/home/ivanzjj/bubi_ledger.db";
-std::string radix_db_name = "/home/ivanzjj/radix_tree";
+std::string ledger_db_name = "/tmp/bubi_ledger.db";
+std::string radix_db_name = "/tmp/radix_tree";
 
 SqliteImp::pointer ledger_db;
 Ledger::pointer	Bubi::last_ledger = nullptr;
