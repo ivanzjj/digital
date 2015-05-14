@@ -14,6 +14,8 @@
 #include "ledger.h"
 #include "transaction.h"
 #include "account.h"
+#include "net.h"
+#include "netbase.h"
 
 using namespace Bubi;
 
@@ -368,7 +370,13 @@ int main (){
 		printf ("init error!\n");
 		return 1;
 	}
-	
+    std::thread thread1(&ThreadSocketHandler);
+	std::thread thread2(&ThreadOpenConnections);
+	std::thread thread3(&ThreadMessageHandler);
+	thread1.join();
+	thread2.join();
+	thread3.join();
+
 //	test ();	
 //	dfs (last_ledger->get_transaction_tree ()->get_root (), 0);
 //	dfs (last_ledger->get_account_tree ()->get_root (), 0);
