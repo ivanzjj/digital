@@ -4,6 +4,9 @@
 #include <memory>
 #include <assert.h>
 #include <queue>
+#include <vector>
+#include <signal.h>
+#include <sys/time.h>
 
 #include <sqlite3.h>
 #include "sqlite_imp.h"
@@ -152,11 +155,8 @@ void dfs (RadixMerkleTreeNode::pointer node, int tree_depth){
 		std::string str = node->peek_leaf ()->peek_string ();
 		acc->unserializer (str);
 
-		std::cout << "********************************************" << std::endl;
-		std::cout << acc->get_account_address ().to_string () << std::endl;
+		std::cout << acc->get_account_address ().to_string () << "::";
 		std::cout << acc->get_account_balance () << std::endl;
-		std::cout << acc->get_previous_ledger_seq () << std::endl;
-		std::cout << acc->get_previous_tx_hash ().to_string () << std::endl;
 		return ;
 	}
 #if 0
@@ -325,6 +325,26 @@ void find_transaction_history (){
 }
 
 
+void auto_print_account_balance (int sig){
+	dfs (last_ledger->get_account_tree ()->get_root (), 0);
+}
+
+int setup_timer (){
+	signal (SIGALRM, auto_print_account_balance);
+	
+	struct itimerval tick;
+	memset (&tick, 0, sizeof (tick));
+	tick.it_value.tv_sec = 5;
+	tick.it_value.tv_usec = 0;
+	tick.it_interval.tv_sec = 5;
+	tick.it_interval.tv_usec = 0;
+
+	int res = setitimer (ITIMER_REAL, &tick, NULL);
+	if (res){
+		printf ("setup timer failed!\n");
+		return 1;
+	}
+}
 
 int init (){
 	RocksdbInstance::set_db_name (radix_db_name);
@@ -333,6 +353,7 @@ int init (){
 		return 1;
 	}
 	fetch_from_db ();
+	setup_timer ();
 	return 0;
 }
 
