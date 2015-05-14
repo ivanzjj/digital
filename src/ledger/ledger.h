@@ -34,7 +34,7 @@ public:
 	int update_ledger_hash ();
 	
 	//transaction API
-	bool add_transaction_entry (Transaction::pointer tx);
+	int add_transaction_entry (Transaction::pointer tx);
 	
 	Ledger ();
 	Ledger (uint256& hash, uint256& parent_hash, uint256& transaction_tree_hash, uint256& account_tree_hash, std::uint32_t& total_coin, std::uint32_t& ledger_sequence, std::uint32_t& close_time);

@@ -101,7 +101,7 @@ Ledger::update_transaction_tree_hash (){
 }
 
 
-bool
+int
 Ledger::add_transaction_entry (Transaction::pointer tx){
 
 	uint256& source_address = tx->get_source_address ();
@@ -110,8 +110,9 @@ Ledger::add_transaction_entry (Transaction::pointer tx){
 
 	Account::pointer source_account = get_account_entry (source_address);
 	Account::pointer destination_account = get_account_entry (destination_address);
-	
-	source_account->add_balance (-amount);
+
+	if (!source_account->add_balance (-amount))
+		return 1;
 	destination_account->add_balance (amount);
 
 	std::uint32_t source_previous_ledger_seq = source_account->get_previous_ledger_seq ();
@@ -152,7 +153,7 @@ Ledger::add_transaction_entry (Transaction::pointer tx){
 	update_account_tree_entry (s_item);
 	update_account_tree_entry (d_item);
 	update_account_tree_hash ();
-	return true;
+	return 0;
 }
 
 Account::pointer

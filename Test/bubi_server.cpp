@@ -90,6 +90,8 @@ int recover_ledger (){
 		return 1;	
 }
 
+
+
 int test (){
 	uint256 hash;
 	char hash_ch[32];
@@ -205,7 +207,68 @@ void fetch_from_db (){
 
 }
 
-void create_transaction (){
+int create_transaction (uint256& source, uint256& det, double amount){
+	Transaction::pointer tx = std::make_shared <Transaction> (source, det, amount);
+	return last_ledger->add_transaction_entry (tx);
+}
+
+
+uint256 string_address_to_uint256 (std::string str_addr){
+	Serializer ss (str_addr);
+	return ss.get_sha512_half ();
+}
+
+
+int create_account (std::string acc_pub){
+	uint256 hash = string_address_to_uint256 (acc_pub);
+	uint256 p_tx;
+	p_tx.zero ();
+	Account::pointer acc = std::make_shared <Account> (hash, 1000, 0, p_tx);
+	last_ledger->add_account_tree_entry (hash, acc);
+	return 0;
+}
+
+double get_balance (std::string acc_pub){
+	uint256 hash = string_address_to_uint256 (acc_pub);
+	Account::pointer acc = last_ledger->get_account_entry (hash);
+	return acc->get_account_balance ();
+}
+
+std::vector <Transaction::pointer>	get_transaction_history (std::string acc_pub){
+	uint256 hash = string_address_to_uint256 (acc_pub);
+	Account::pointer acc = last_ledger->get_account_entry (hash);
+	std::vector <Transaction::pointer> res;
+
+	uint256 tx_hash;
+	std::uint32_t	tx_seq;
+
+	tx_seq = acc->get_previous_ledger_seq ();
+	tx_hash = acc->get_previous_tx_hash ();
+
+
+	while ( tx_seq != 0 ){
+		Transaction::pointer tx = last_ledger->get_transaction_entry (tx_hash);
+		res.push_back (tx);
+/*
+		std::cout << "------------------------------------" << std::endl;
+		std::cout << tx->get_source_address ().to_string () << std::endl;
+		std::cout << tx->get_destination_address ().to_string () << std::endl;
+		std::cout << tx->get_payment_amount () << std::endl;
+*/
+		if (hash == tx->get_source_address ()){
+			tx_seq = tx->get_source_previous_ledger_seq ();
+			tx_hash = tx->get_source_previous_tx_hash ();
+		}
+		else {
+			tx_seq = tx->get_destination_previous_ledger_seq ();
+			tx_hash = tx->get_destination_previous_tx_hash ();
+		}
+	}
+	return res;
+}
+
+
+void create_transaction2 (){
 	uint256 source, destination;
 	char hash_ch[32];
 	for (int i = 0; i < 32; i++)
@@ -215,10 +278,13 @@ void create_transaction (){
 	for (int i = 0; i < 32; i++)	hash_ch[i] = i;
 	hash_ch[0] = 1; hash_ch[1] = 2;
 	destination.init (hash_ch);
-
-	Transaction::pointer tx = std::make_shared <Transaction> (source, destination, 75);
 	
-	last_ledger->add_transaction_entry (tx);
+	if (create_transaction (source, destination, 200)){
+		printf ("transaction has failed!\n");
+	}
+	else {
+		printf ("transaction is ok\n");
+	}
 }
 
 
@@ -258,18 +324,28 @@ void find_transaction_history (){
 
 }
 
-int main (){
+
+
+int init (){
 	RocksdbInstance::set_db_name (radix_db_name);
 	SqliteInstance::set_db_name (ledger_db_name);
 	if (recover_ledger ()){
 		return 1;
 	}
+	fetch_from_db ();
+	return 0;
+}
+
+int main (){
+	if (init ()){
+		printf ("init error!\n");
+		return 1;
+	}
 	
 //	test ();	
-	fetch_from_db ();
 //	dfs (last_ledger->get_transaction_tree ()->get_root (), 0);
 	dfs (last_ledger->get_account_tree ()->get_root (), 0);
-//	create_transaction ();
+//	create_transaction2 ();
 //	std::cout << "**************After the transaction added to the ledger*******************" << std::endl;
 //	dfs (last_ledger->get_account_tree ()->get_root (), 0);
 //	dfs (last_ledger->get_transaction_tree ()->get_root (), 0);

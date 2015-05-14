@@ -23,8 +23,11 @@ public:
 	std::uint32_t&	get_previous_ledger_seq ();
 	uint256&	get_previous_tx_hash ();
 
-	void		add_balance (double amount){
-		account_balance_ += amount;
+	bool		add_balance (double amount){
+		double tmp = account_balance_ + amount;
+		if (tmp < 0)	return false;
+		account_balance_ = tmp;
+		return true;
 	}
 	void		set_previous_ledger_seq (std::uint32_t seq){
 		previous_ledger_seq_ = seq;
