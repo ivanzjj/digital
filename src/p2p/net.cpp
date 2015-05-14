@@ -202,7 +202,7 @@ void Discover() {
     }
 }
 //todo: getBalance function
-
+/*
 bool getBalance(const std::string addr, double &balance) {
     //get balance by account addr
     //test
@@ -210,7 +210,7 @@ bool getBalance(const std::string addr, double &balance) {
     balance = 200.10;
     return true;
 }
-
+*/
 std::string ParseHandleJsonData(const std::string data) {
     Json::Reader reader;
     Json::Value  root;
@@ -223,14 +223,9 @@ std::string ParseHandleJsonData(const std::string data) {
                 //balance request
                 double balance;
                 std::string balance_str;
-                if (getBalance(root["params"]["bubiAddr"].asString(), balance)) {
-                    output["errCode"] = "1";
-                    output["msg"] = "success";
-                }
-                else {
-                    output["errCode"] = "0";
-                    output["msg"] = "fail";
-                }
+				balance =  get_balance(root["params"]["bubiAddr"].asString());
+                output["errCode"] = "1";
+                output["msg"] = "success";
                 std::stringstream ss;
                 ss << balance;
                 ss >> balance_str;
@@ -248,7 +243,25 @@ std::string ParseHandleJsonData(const std::string data) {
                 std::string recvAddr = root["params"]["receive_addr"].asString();
                 //todo: use variables above to generate transactions
                 //todo: put transaction into ledger
+				stringstream ss;
+				ss << fee;
+				double amount;
+				ss >> amount;
+                if (!create_transaction(sendAddr, recvaddr, amount)) {
 
+					output["errCode"] = "1";
+					output["msg"] = "success";
+				}
+				else {
+					output["errCode"] = "0";
+					output["msg"] = "fail";
+				}
+				time_t tm = time(NULL);
+				stringstream kk;
+				kk << tm;
+				std::string transid;
+				kk >> transid;
+				output["data"]["trans"] = transid;
                 //use protobuf serialize tx to a string
                 std::string txserialize;
                 //test
@@ -260,9 +273,6 @@ std::string ParseHandleJsonData(const std::string data) {
                             node->PushMessage("transaction", txserialize);
                     }
                 }
-                output["errCode"] = "1";
-                output["msg"] = "success";
-                output["data"]["trans"] = "123456";
                 str = writer.write(output);
                 return str;
             }
@@ -277,11 +287,14 @@ std::string ParseHandleJsonData(const std::string data) {
                 std::string bubiAddr = root["params"]["bubiAddr"].asString();
                 //todo: create account
 				
-//				Serializer ss (bubiAddr);
-//				uint256 account_hash = ss.get_sha512_half ();
-
-				output["errCode"] = "1";
-                output["msg"] = "success";
+			    if (!create_account(bubiAddr)) {	
+					output["errCode"] = "1";
+					output["msg"] = "success";
+				}
+				else {
+					output["errCode"] = "0";
+					output["msg"] = "fail";
+				}
                 output["data"] = Json::Value();
 				str = writer.write(output);
 				return str;
