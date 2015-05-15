@@ -598,7 +598,7 @@ void ThreadSocketHandler() {
         SOCKET maxSocket = 0;
         {
             std::lock_guard<std::mutex> lockGuard(mu_vNodes);
-            std::cout << "1111111111111111111111the size of peers : " << vNodes.size() << std::endl;
+            //std::cout << "1111111111111111111111the size of peers : " << vNodes.size() << std::endl;
             for (auto bnode : vNodes) {
                 if (bnode->bSocket_ == INVALID_SOCKET)
                     continue;
@@ -632,8 +632,8 @@ void ThreadSocketHandler() {
                 }
             }
         }
-        std::cout << "maxSocket:" << maxSocket << std::endl;
-        std::cout << "timeout: second:" << timeout.tv_sec << " useconds:" << timeout.tv_usec << std::endl;
+        //std::cout << "maxSocket:" << maxSocket << std::endl;
+        //std::cout << "timeout: second:" << timeout.tv_sec << " useconds:" << timeout.tv_usec << std::endl;
         int nSelect = select(maxSocket+1, &fdsetRecv, &fdsetSend, NULL, &timeout);
         if (nSelect == SOCKET_ERROR) {
             std::cout << "function " << __FUNCTION__ << " select failed" << std::endl;
