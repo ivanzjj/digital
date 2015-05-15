@@ -292,7 +292,7 @@ std::string ParseHandleJsonData(const std::string data) {
                 std::string bubiAddr = root["params"]["bubiAddr"].asString();
                 //todo: create account
 				//success
-			    if (!create_account(bubiAddr) {	
+			    if (!create_account(bubiAddr)) {	
 					output["errCode"] = "1";
 					output["msg"] = "success";
 				}
