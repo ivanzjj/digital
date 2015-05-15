@@ -445,7 +445,7 @@ void ThreadOpenConnections() {
         BService *bService = new BService(ip.c_str(), 30000);
 		bool flag = false;
 		for (auto addr : hostAddr) {
-			if (bService->getIp() == addr) {
+			if (strcmp(ip.c_str(), inet_ntoa(addr)) == 0) {
 				flag = true;
 				break;
 			}
