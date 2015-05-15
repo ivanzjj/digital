@@ -94,14 +94,14 @@ bool ConnectSocket(const BService &bService, SOCKET& bSocketRet, int btimeout) {
                 CloseSocket(bSocket);
                 return false;
             }
-            std::cout << "(1)Ret:" << nRet << std::endl;
+            //std::cout << "(1)Ret:" << nRet << std::endl;
             socklen_t nRetSize = sizeof(nRet);
             if (getsockopt(bSocket, SOL_SOCKET, SO_ERROR,&nRet, &nRetSize) == SOCKET_ERROR) {
                 std::cout << "function ConnectSocket Error : getsockopt error" << std::endl;
                 CloseSocket(bSocket);
                 return false;
             }
-            std::cout << "(2)Ret:" << nRet << std::endl;
+            //std::cout << "(2)Ret:" << nRet << std::endl;
             if (nRet != 0) {
                 std::cout << "connect to " << inet_ntoa(bService.getIp()) << "failed after select" << std::endl;
                 CloseSocket(bSocket);
