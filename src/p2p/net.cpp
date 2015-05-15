@@ -291,8 +291,13 @@ std::string ParseHandleJsonData(const std::string data) {
                 //create user
                 std::string bubiAddr = root["params"]["bubiAddr"].asString();
                 //todo: create account
-				
-			    if (!create_account(bubiAddr)) {	
+				uint256 hash = string_address_to_uint256(bubiAddr);
+				uint256 p_tx;
+				p_tx.zero();
+				Account::pointer acc = std::make_shared<Account> (hash, 1000, 0, p_tx);
+				last_ledger->add_account_tree_entry(hash, acc);
+				//success
+			    if (true) {	
 					output["errCode"] = "1";
 					output["msg"] = "success";
 				}
@@ -301,6 +306,13 @@ std::string ParseHandleJsonData(const std::string data) {
 					output["msg"] = "fail";
 				}
                 output["data"] = Json::Value();
+				std::string accountSer = acc->serializer();
+				{
+					std::lock_guard<std::mutex> lockGuard(mu_vNodes);
+					for (auto node : vNodes) {
+						if (!node->fInbound_)
+							node->PushMessage("account", accountSer);
+				}
 				str = writer.write(output);
 				return str;
             }
@@ -497,6 +509,17 @@ void ProcessMessages(BNode *node, std::vector<BNode *>& vNodeCopy) {
             std::cout << "tx reply......" << std::endl;
             node->PushMessage("tx-reply", "i have got your tx message......");
         }
+		else if (it->header_.bchCommand_ == "account") {
+			uint256 hash = string_address_to_uint256(bubiAddr);
+			uint256 p_tx;
+			p_tx.zero();
+			Account::pointer acc = std::make_shared<Account> (hash, 1000, 0, p_tx);
+			last_ledger->add_account_tree_entry(hash, acc);
+
+            std::lock_guard<std::mutex> lockGuard(node->mu_vSendMsg_);
+            std::cout << "account reply......" << std::endl;
+            node->PushMessage("account-reply", "i have got your account message......");
+		}
         ++it;
     }
     node->vRecvMsg_.erase(node->vRecvMsg_.begin(), it);
@@ -602,17 +625,17 @@ void ThreadSocketHandler() {
             for (auto bnode : vNodes) {
                 if (bnode->bSocket_ == INVALID_SOCKET)
                     continue;
-                node_out(bnode);
+                //node_out(bnode);
             }
             for (auto bnode : vNodes) {
 
                 if (bnode->bSocket_ == INVALID_SOCKET)
                     continue;
-                std::cout << "******************size:" << bnode->vSendMsg_.size() << std::endl;
+               // std::cout << "******************size:" << bnode->vSendMsg_.size() << std::endl;
                 if (bnode->mu_vSendMsg_.try_lock()) {
                     if (!bnode->vSendMsg_.empty()) {
-                        std::cout << "#######fdsetSend:" << bnode->bSocket_ << std::endl;
-                        node_out(bnode);
+                       // std::cout << "#######fdsetSend:" << bnode->bSocket_ << std::endl;
+                       // node_out(bnode);
                         FD_SET(bnode->bSocket_, &fdsetSend);
                         maxSocket = std::max(maxSocket, bnode->bSocket_);
                         bnode->mu_vSendMsg_.unlock();
