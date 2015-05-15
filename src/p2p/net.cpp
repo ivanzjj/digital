@@ -307,7 +307,7 @@ std::string ParseHandleJsonData(const std::string data) {
 						if (!node->fInbound_)
 							node->PushMessage("account", bubiAddr);
 				}
-				}
+
 				str = writer.write(output);
 				return str;
             }
