@@ -291,14 +291,8 @@ std::string ParseHandleJsonData(const std::string data) {
                 //create user
                 std::string bubiAddr = root["params"]["bubiAddr"].asString();
                 //todo: create account
-				Serializer ss(bubiAddr);
-				uint256 hash = ss.get_sha512_half();
-				uint256 p_tx;
-				p_tx.zero();
-				Account::pointer acc = std::make_shared<Account> (hash, 1000, 0, p_tx);
-				last_ledger->add_account_tree_entry(hash, acc);
 				//success
-			    if (true) {	
+			    if (!create_account(bubiAddr) {	
 					output["errCode"] = "1";
 					output["msg"] = "success";
 				}
@@ -307,12 +301,11 @@ std::string ParseHandleJsonData(const std::string data) {
 					output["msg"] = "fail";
 				}
                 output["data"] = Json::Value();
-				std::string accountSer = acc->serializer();
 				{
 					std::lock_guard<std::mutex> lockGuard(mu_vNodes);
 					for (auto node : vNodes) {
 						if (!node->fInbound_)
-							node->PushMessage("account", accountSer);
+							node->PushMessage("account", bubiAddr);
 				}
 				}
 				str = writer.write(output);
@@ -512,12 +505,7 @@ void ProcessMessages(BNode *node, std::vector<BNode *>& vNodeCopy) {
             node->PushMessage("tx-reply", "i have got your tx message......");
         }
 		else if (it->header_.bchCommand_ == "account") {
-			uint256 hash = string_address_to_uint256(bubiAddr);
-			uint256 p_tx;
-			p_tx.zero();
-			Account::pointer acc = std::make_shared<Account> (hash, 1000, 0, p_tx);
-			last_ledger->add_account_tree_entry(hash, acc);
-
+	    create_account(it->data_);
             std::lock_guard<std::mutex> lockGuard(node->mu_vSendMsg_);
             std::cout << "account reply......" << std::endl;
             node->PushMessage("account-reply", "i have got your account message......");
