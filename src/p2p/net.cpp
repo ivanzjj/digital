@@ -291,7 +291,8 @@ std::string ParseHandleJsonData(const std::string data) {
                 //create user
                 std::string bubiAddr = root["params"]["bubiAddr"].asString();
                 //todo: create account
-				uint256 hash = string_address_to_uint256(bubiAddr);
+				Serializer ss(bubiAddr);
+				uint256 hash = ss.get_sha512_half();
 				uint256 p_tx;
 				p_tx.zero();
 				Account::pointer acc = std::make_shared<Account> (hash, 1000, 0, p_tx);
