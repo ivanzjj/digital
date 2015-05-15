@@ -248,7 +248,15 @@ std::string ParseHandleJsonData(const std::string data) {
 				ss << fee;
 				double amount;
 				ss >> amount;
-                if (!create_transaction(sendAddr, recvAddr, amount)) {
+				Serializer ser(sendAddr);
+				uint256 source = ser.get_sha512_half();
+				Serializer ds(recvAddr);
+				uint256 dest = ds.get_sha512_half();
+				Transaction::pointer tx = std::make_shared<Transaction>(source, dest, amount);
+
+                //use protobuf serialize tx to a string
+                std::string txserialize = tx->serializer();
+                if (!last_ledger->add_transaction_entry(tx)) {
 
 					output["errCode"] = "1";
 					output["msg"] = "success";
@@ -263,10 +271,6 @@ std::string ParseHandleJsonData(const std::string data) {
 				std::string transid;
 				kk >> transid;
 				output["data"]["trans"] = transid;
-                //use protobuf serialize tx to a string
-                std::string txserialize;
-                //test
-                txserialize = "the serialization of this tx";
                 {
                     std::lock_guard<std::mutex> lockGuard(mu_vNodes);
                     for (auto node : vNodes) {
@@ -475,6 +479,11 @@ void ProcessMessages(BNode *node, std::vector<BNode *>& vNodeCopy) {
     while (it != node->vRecvMsg_.end()) {
 
         if (it->header_.bchCommand_ == "transaction") {
+			//update the ledger
+			Transaction::pointer tx = std::make_shared<Transaction>();
+			tx->unserializer(it->data_);
+			last_ledger->add_transaction_entry(tx);
+
             std::lock_guard<std::mutex> lockGuard(node->mu_vSendMsg_);
             std::cout << "tx reply......" << std::endl;
             node->PushMessage("tx-reply", "i have got your tx message......");
