@@ -14,6 +14,8 @@ libbubi_network_la_LIBADD = -lpthread \
 							$(top_builddir)/src/ledger/libbubi_ledger.la		\   
 					        $(top_builddir)/src/base/libbubi_base.la        
 
+bubiconfigdir             = /etc/bubiconfig
+bubiconfig_DATA           = peers.dat
 							
 noinst_HEADERS = net.h netbase.h bubi.pb.h interface.h
 
