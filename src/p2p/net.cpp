@@ -441,8 +441,17 @@ void ThreadOpenConnections() {
     if (!infile)
         std::cout << "peers.dat open failed!" << std::endl;
     while (infile >> ip) {
+		
         BService *bService = new BService(ip.c_str(), 30000);
-        vAddrToConnect.push_back(bService);
+		bool flag = false;
+		for (auto addr : hostAddr) {
+			if (bService->getIp() == addr) {
+				flag = true;
+				break;
+			}
+		}
+		if (!flag)
+			vAddrToConnect.push_back(bService);
     }
     infile.close();
     while (true) {
