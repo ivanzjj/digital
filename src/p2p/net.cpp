@@ -314,6 +314,7 @@ std::string ParseHandleJsonData(const std::string data) {
 						if (!node->fInbound_)
 							node->PushMessage("account", accountSer);
 				}
+				}
 				str = writer.write(output);
 				return str;
             }
