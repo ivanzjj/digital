@@ -230,7 +230,6 @@ std::string ParseHandleJsonData(const std::string data) {
                 std::stringstream ss;
                 ss << balance;
                 ss >> balance_str;
-                std::cout << "balance_str:" << balance_str << std::endl;
                 output["data"]["bubiAddr"] = root["params"]["bubiAddr"];
                 output["data"]["balance"] = balance_str;
                 str = writer.write(output);
@@ -638,8 +637,8 @@ void ThreadSocketHandler() {
                 if (bnode->mu_vRecvMsg_.try_lock()) {
                     if (bnode->vRecvMsg_.empty() || bnode->getTotalRecvSize() <= MAXRECVSIZE) {
                         FD_SET(bnode->bSocket_, &fdsetRecv);
-                        std::cout << "********fdsetRecv:" << bnode->bSocket_ << std::endl;
-                        node_out(bnode);
+                        //std::cout << "********fdsetRecv:" << bnode->bSocket_ << std::endl;
+                        //node_out(bnode);
                         maxSocket = std::max(maxSocket, bnode->bSocket_);
                     }
                     bnode->mu_vRecvMsg_.unlock();
