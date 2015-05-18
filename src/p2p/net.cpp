@@ -142,7 +142,7 @@ bool AcceptSocket() {
         return false;
     }
     if (nRet == 0)
-        std::cout << "function " << __FUNCTION__ << " select timeout" << std::endl;
+        //std::cout << "function " << __FUNCTION__ << " select timeout" << std::endl;
     for (auto &listenSocket : bgListenSocket) {
         if (listenSocket != INVALID_SOCKET && FD_ISSET(listenSocket, &fdSetRecv)) {
             struct sockaddr_in sockaddrIn;
