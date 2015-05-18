@@ -138,7 +138,7 @@ bool AcceptSocket() {
     struct timeval timeval1 = MillisToTimeval(1000);
     int nRet = select(hSocketMax+1, &fdSetRecv, NULL, NULL, &timeval1);
     if (nRet == SOCKET_ERROR) {
-        std::cout << "function AcceptSocket select faild " << std::endl;
+        //std::cout << "function AcceptSocket select faild " << std::endl;
         return false;
     }
     if (nRet == 0)
@@ -661,7 +661,7 @@ void ThreadSocketHandler() {
             continue;
         }
         if (nSelect == 0) {
-            std::cout << "function:" << __FUNCTION__ << " select timeout" << std::endl;
+            //std::cout << "function:" << __FUNCTION__ << " select timeout" << std::endl;
             continue;
         }
         //service each socket
