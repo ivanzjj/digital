@@ -395,20 +395,19 @@ void SocketRecvData(BNode* bNode) {
         bNode->nRecvBytes_ += nBytes;
         //bchBuf[nBytes] = '\0';
         std::string data(bchBuf,nBytes);
-        std::cout << "received data : " << data << std::endl;
+        //std::cout << "received data : " << data << std::endl;
         //data is json
         //parse data
         if (data[0] != '{') {
             BNetMessage message;
             message.unserializer(data);
-            std::cout << "received msg data:  command: " << message.header_.bchCommand_ << " is:" << message.data_ <<
-            std::endl;
+            //std::cout << "received msg data:  command: " << message.header_.bchCommand_ << " is:" << message.data_ << std::endl;
             bNode->vRecvMsg_.push_back(message);
         }
         else {
             std::string jsondata = ParseHandleJsonData(data);
             int nBytes = send(bNode->bSocket_, &jsondata[0], jsondata.size(), MSG_DONTWAIT | MSG_NOSIGNAL);
-            std::cout << "json send bytes:" << nBytes << std::endl;
+            //std::cout << "json send bytes:" << nBytes << std::endl;
         }
         /*
         {
@@ -502,13 +501,13 @@ void ProcessMessages(BNode *node, std::vector<BNode *>& vNodeCopy) {
 			last_ledger->add_transaction_entry(tx);
 
             std::lock_guard<std::mutex> lockGuard(node->mu_vSendMsg_);
-            std::cout << "tx reply......" << std::endl;
+            //std::cout << "tx reply......" << std::endl;
             node->PushMessage("tx-reply", "i have got your tx message......");
         }
 		else if (it->header_.bchCommand_ == "account") {
 	    create_account(it->data_);
             std::lock_guard<std::mutex> lockGuard(node->mu_vSendMsg_);
-            std::cout << "account reply......" << std::endl;
+            //std::cout << "account reply......" << std::endl;
             node->PushMessage("account-reply", "i have got your account message......");
 		}
         ++it;
@@ -678,9 +677,9 @@ void ThreadSocketHandler() {
             if (FD_ISSET(bnode->bSocket_, &fdsetRecv)) {
 
                 if (bnode->mu_vRecvMsg_.try_lock()) {
-                    std::cout << "-------------------------------------------" << std::endl;
-                    std::cout << "******************this socket can read " << bnode->bSocket_ << " ip:" << inet_ntoa(bnode->bService_.getIp())
-                    << " port:" << ntohs(bnode->bService_.getPort()) << std::endl;
+                    //std::cout << "-------------------------------------------" << std::endl;
+                    //std::cout << "******************this socket can read " << bnode->bSocket_ << " ip:" << inet_ntoa(bnode->bService_.getIp())
+                    //<< " port:" << ntohs(bnode->bService_.getPort()) << std::endl;
                     SocketRecvData(bnode);
                     bnode->mu_vRecvMsg_.unlock();
                 }
@@ -689,9 +688,9 @@ void ThreadSocketHandler() {
             else if (FD_ISSET(bnode->bSocket_, &fdsetSend)) {
 
                 if (bnode->mu_vSendMsg_.try_lock()) {
-                    std::cout << "-------------------------------------------" << std::endl;
-                    std::cout << "############this socket can write " << bnode->bSocket_ << " ip:" << inet_ntoa(bnode->bService_.getIp())
-                    << " port:" << ntohs(bnode->bService_.getPort()) << std::endl;
+                    //std::cout << "-------------------------------------------" << std::endl;
+                    //std::cout << "############this socket can write " << bnode->bSocket_ << " ip:" << inet_ntoa(bnode->bService_.getIp())
+                    //<< " port:" << ntohs(bnode->bService_.getPort()) << std::endl;
                     SocketSendData(bnode);
                     bnode->mu_vSendMsg_.unlock();
                 }
