@@ -21,8 +21,8 @@
 
 using namespace Bubi;
 
-std::string ledger_db_name = "/tmp/bubi_ledger.db";
-std::string radix_db_name = "/tmp/radix_tree";
+std::string ledger_db_name = "/var/bubi_ledger.db";
+std::string radix_db_name = "/var/radix_tree";
 
 SqliteImp::pointer ledger_db;
 Ledger::pointer	Bubi::last_ledger = nullptr;
@@ -336,7 +336,9 @@ void find_transaction_history (){
 
 
 void auto_print_account_balance (int sig){
+	std::cout << "**********************************" << std::endl;
 	dfs (Bubi::last_ledger->get_account_tree ()->get_root (), 0);
+	std::cout << "**********************************" << std::endl;
 }
 
 int setup_timer (){
